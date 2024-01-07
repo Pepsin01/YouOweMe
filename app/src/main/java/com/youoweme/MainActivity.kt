@@ -1,5 +1,7 @@
 package com.youoweme
 
+import EventView
+import HomeScreenView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,7 +22,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
             YouOweMeTheme {
                 App()
@@ -28,7 +29,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun App() {
@@ -40,7 +40,7 @@ fun App() {
             ) {
             val homeScreenViewModel = HomeScreenViewModel(EventsRepository(EventsDataSource())) //TODO: inject all using DI
 
-            HomeScreen(
+            HomeScreenView(
                 onNavigateToEvent = { eventId -> navController.navigate("eventView/$eventId") },
                 homeScreenViewModel = homeScreenViewModel
             )
@@ -54,6 +54,8 @@ fun App() {
 
             val eventsRepository = EventsRepository(EventsDataSource()) //TODO: inject all using DI
             val event: Event = eventsRepository.fetchEvent(eventId)
+                ?: throw IllegalArgumentException("There is no event with id of $eventId")
+
             val eventViewModel = EventViewModel(event)
 
             EventView(
@@ -62,12 +64,4 @@ fun App() {
             )
         }
     }
-}
-
-@Composable
-fun HomeScreen(onNavigateToEvent: (eventId: Int) -> Unit, homeScreenViewModel: HomeScreenViewModel) {
-}
-
-@Composable
-fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel) {
 }
