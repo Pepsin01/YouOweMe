@@ -1,5 +1,7 @@
 package com.youoweme.model
 
+import javax.inject.Inject
+
 //TODO: enhance model
 
 data class Event(
@@ -15,7 +17,7 @@ data class Event(
     //val id: Int = lastId++;
 }
 
-class EventsRepository(
+class EventsRepository @Inject constructor(
     private val eventsDataSource: EventsDataSource
 )
 {

@@ -1,6 +1,10 @@
 package com.youoweme.model
 
-class EventsDataSource {
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class EventsDataSource @Inject constructor() {
 
     private val events: List<Event> = listOf(
         Event(0, "title1"),
