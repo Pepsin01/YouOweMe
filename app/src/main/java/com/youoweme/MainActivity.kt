@@ -6,7 +6,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavType
 import com.youoweme.ui.theme.YouOweMeTheme
 import androidx.navigation.compose.NavHost
@@ -14,11 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.youoweme.model.Event
-import com.youoweme.model.EventsDataSource
 import com.youoweme.model.EventsRepository
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.HomeScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,12 +59,9 @@ fun App(eventsRepository: EventsRepository) {
             val eventId = backStackEntry.arguments?.getInt("eventId")
                 ?: throw IllegalArgumentException("Navigated with wrong event id");
 
-            val event: Event = eventsRepository.fetchEvent(eventId)
-                ?: throw IllegalArgumentException("There is no event with id of $eventId")
-
             EventView(
                 onNavigateToHomeScreen = { navController.navigate("homeScreen") },
-                eventViewModel = EventViewModel(event)
+                eventViewModel = EventViewModel(eventId, eventsRepository)
             )
         }
     }

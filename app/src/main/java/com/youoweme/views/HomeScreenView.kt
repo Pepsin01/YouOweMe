@@ -23,20 +23,21 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.youoweme.model.Event
-import com.youoweme.model.EventsDataSource
-import com.youoweme.model.EventsRepository
 import com.youoweme.viewmodel.HomeScreenViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenView(onNavigateToEvent: (eventId: Int) -> Unit, homeScreenViewModel: HomeScreenViewModel) {
-    val homeScreenUiState by homeScreenViewModel.uiState.collectAsState()
+fun HomeScreenView(onNavigateToEvent: (eventId: Long) -> Unit, homeScreenViewModel: HomeScreenViewModel) {
+    val uiState by homeScreenViewModel.uiState.collectAsState()
+    var clicking by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -54,11 +55,7 @@ fun HomeScreenView(onNavigateToEvent: (eventId: Int) -> Unit, homeScreenViewMode
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                //TODO: first show dialog create new event dialog, this should be done on dialog save
-                //TODO: how to sync ids nicely with db in the future?
-                val id: Int = homeScreenUiState.events.maxOf { event -> event.id } + 1
-
-                homeScreenViewModel.addEvent(Event(id, "newly added event"))
+                homeScreenViewModel.addEvent(Event("event ${clicking++}"))
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
@@ -78,14 +75,13 @@ fun HomeScreenView(onNavigateToEvent: (eventId: Int) -> Unit, homeScreenViewMode
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)) {
-                    items(homeScreenUiState.events) {event ->
+                    items(uiState.events) { event ->
                         Row(
                             modifier = Modifier
                                 .height(50.dp)
                                 .fillMaxWidth(),
                         ) {
                             Button(onClick = {
-                                // beware! Doesnt work on newly added events yet, problems with ids
                                 onNavigateToEvent(event.id)
                             },
                                 modifier = Modifier
@@ -104,13 +100,4 @@ fun HomeScreenView(onNavigateToEvent: (eventId: Int) -> Unit, homeScreenViewMode
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun HomeScreenViewPreview() {
-    HomeScreenView(
-        onNavigateToEvent = {},
-        homeScreenViewModel = HomeScreenViewModel(EventsRepository(EventsDataSource())) //TODO: inject all using DI
-    )
 }

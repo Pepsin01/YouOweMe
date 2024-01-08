@@ -1,27 +1,28 @@
 package com.youoweme.model
 
+import androidx.room.PrimaryKey
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class EventsDataSource @Inject constructor() {
+class EventsDataSource @Inject constructor(
+    private val db: YouOweMeDatabase
+) {
 
-    private val events: List<Event> = listOf(
-        Event(0, "title1"),
-        Event(1, "title2"),
-        Event(2, "title3"),
-        Event(3, "title4"),
-        Event(4, "title5"),
-        Event(5, "title6"),
-        Event(6, "title7"),
-        Event(7, "title8"),
-    )
+    private val eventDao: EventDao = db.eventDao()
 
     fun fetchEvents(): List<Event> {
-        return events;
+        val events  = eventDao.getAll();
+        return events.map { e -> Event(e.title, e.id) }
     }
 
     fun fetchEvent(eventId: Int): Event? {
-        return events.firstOrNull { event -> event.id == eventId }
+        val e = eventDao.get(eventId) ?: return null;
+        return Event(e.title, e.id)
+    }
+
+    fun addEvent(event: Event): Long {
+        val ee = EventEntity(event.title)
+        return eventDao.insert(ee)
     }
 }
