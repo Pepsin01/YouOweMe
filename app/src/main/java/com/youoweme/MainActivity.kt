@@ -17,7 +17,9 @@ import com.youoweme.model.EventsDataSource
 import com.youoweme.model.EventsRepository
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.HomeScreenViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
