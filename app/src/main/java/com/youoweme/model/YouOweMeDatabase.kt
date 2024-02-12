@@ -15,6 +15,7 @@ import javax.inject.Singleton
 @Database(entities = [EventEntity::class], version = 1)
 abstract class YouOweMeDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
+    abstract fun personDao(): PersonDao
 }
 
 @InstallIn(SingletonComponent::class)
