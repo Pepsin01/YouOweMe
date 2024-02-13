@@ -1,7 +1,7 @@
 package com.youoweme
 
-import EventView
-import HomeScreenView
+import com.youoweme.views.EventView
+import com.youoweme.views.HomeScreenView
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.youoweme.model.DebtsRepository
 import com.youoweme.model.Event
 import com.youoweme.model.EventsRepository
+import com.youoweme.model.TransactionsRepository
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.HomeScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,20 +28,22 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var eventsRepository: EventsRepository
+    @Inject lateinit var debtsRepository: DebtsRepository
+    @Inject lateinit var transactionsRepository: TransactionsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             YouOweMeTheme {
-                App(eventsRepository)
+                App(eventsRepository, debtsRepository, transactionsRepository)
             }
         }
     }
 }
 
 @Composable
-fun App(eventsRepository: EventsRepository) {
+fun App(eventsRepository: EventsRepository, debtsRepository: DebtsRepository, transactionsRepository: TransactionsRepository) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "homeScreen") {
@@ -61,7 +65,7 @@ fun App(eventsRepository: EventsRepository) {
 
             EventView(
                 onNavigateToHomeScreen = { navController.navigate("homeScreen") },
-                eventViewModel = EventViewModel(eventId, eventsRepository)
+                eventViewModel = EventViewModel(eventId, eventsRepository, debtsRepository, transactionsRepository),
             )
         }
     }

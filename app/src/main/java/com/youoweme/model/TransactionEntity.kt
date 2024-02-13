@@ -18,7 +18,6 @@ class Transaction (
     val payer: String,
     val payee: String,
     val description: String,
-    val date: Date,
     val id: Long = 0
 )
 
@@ -29,7 +28,6 @@ data class TransactionEntity (
     @ColumnInfo val payer: String,
     @ColumnInfo val payee: String,
     @ColumnInfo val description: String,
-    @ColumnInfo val date: String,
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 )
 

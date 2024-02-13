@@ -14,16 +14,16 @@ class TransactionDataSource @Inject constructor(
 
     fun fetchTransactions(eventId: Long): List<Transaction> {
         val transactions  = transactionDao.getAll(eventId)
-        return transactions.map { t -> Transaction(t.eventId, t.amount, t.payer, t.payee, t.description, DateFormat.getDateInstance().parse(t.date), t.id) }
+        return transactions.map { t -> Transaction(t.eventId, t.amount, t.payer, t.payee, t.description, t.id) }
     }
 
     fun fetchTransaction(transactionId: Long): Transaction? {
         val t = transactionDao.get(transactionId) ?: return null
-        return Transaction(t.eventId, t.amount, t.payer, t.payee, t.description, DateFormat.getDateInstance().parse(t.date), t.id)
+        return Transaction(t.eventId, t.amount, t.payer, t.payee, t.description, t.id)
     }
 
     fun addTransaction(transaction: Transaction): Long {
-        val t = TransactionEntity(transaction.eventId, transaction.amount, transaction.payer, transaction.payee, transaction.description, transaction.date.toString())
+        val t = TransactionEntity(transaction.eventId, transaction.amount, transaction.payer, transaction.payee, transaction.description)
         return transactionDao.insert(t)
     }
 
