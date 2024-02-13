@@ -12,10 +12,11 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Database(entities = [EventEntity::class, DebtEntity::class], version = 1)
+@Database(entities = [EventEntity::class, DebtEntity::class, TransactionEntity::class], version = 1)
 abstract class YouOweMeDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
     abstract fun debtDao(): DebtDao
+    abstract fun transactionDao(): TransactionDao
 }
 
 @InstallIn(SingletonComponent::class)
