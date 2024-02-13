@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class Debt (
     val eventId: Long,
-    val amount: Double,
+    var amount: Double,
     val debtor: String,
     val creditor: String,
     val id: Long = 0

@@ -2,6 +2,7 @@ package com.youoweme.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.youoweme.algorithms.Accountant
 import com.youoweme.model.Event
 import com.youoweme.model.EventsRepository
 import com.youoweme.model.Debt
@@ -24,12 +25,13 @@ class EventViewModel(
     private val eventId: Int,
     private var eventsRepository: EventsRepository,
     private var debtsRepository: DebtsRepository,
-    private var transactionsRepository: TransactionsRepository
+    private var transactionsRepository: TransactionsRepository,
 ) : ViewModel() {
 
 
     private val _uiState = MutableStateFlow(EventViewUiState(null, listOf(), listOf()))
     val uiState: StateFlow<EventViewUiState> = _uiState.asStateFlow()
+    private var accountant: Accountant? = null //TODO: do this in a better way
 
     init {
         viewModelScope.launch {
@@ -40,6 +42,8 @@ class EventViewModel(
                 val debts = debtsRepository.fetchDebts(eventId.toLong())
 
                 val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+
+                accountant = Accountant(eventId.toLong()) //TODO: do this in a better way
 
                 _uiState.update { currState ->
                     currState.copy(
@@ -81,6 +85,8 @@ class EventViewModel(
                     transactions = transactions,
                 )
             }
+
+            updateDebts()
         }
     }
 
@@ -93,6 +99,31 @@ class EventViewModel(
             _uiState.update { currState ->
                 currState.copy(
                     transactions = transactions,
+                )
+            }
+
+            updateDebts()
+        }
+    }
+
+    private fun updateDebts() {
+        viewModelScope.launch {
+            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            for (debt in _uiState.value.debts) {
+                debtsRepository.deleteDebt(debt)
+            }
+            var debts = accountant?.RecalculateDebts(_uiState.value.debts, transactions)
+            if (debts != null) {
+                for (debt in debts) {
+                    debtsRepository.addDebt(debt)
+                }
+            }
+            debts = debtsRepository.fetchDebts(eventId.toLong())
+
+
+            _uiState.update { currState ->
+                currState.copy(
+                    debts = debts,
                 )
             }
         }
