@@ -17,6 +17,7 @@ abstract class YouOweMeDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
     abstract fun debtDao(): DebtDao
     abstract fun transactionDao(): TransactionDao
+    abstract fun personDao(): PersonDao
 }
 
 @InstallIn(SingletonComponent::class)
