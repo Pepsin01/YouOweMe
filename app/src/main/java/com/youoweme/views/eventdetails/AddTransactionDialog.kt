@@ -86,7 +86,8 @@ fun AddTransactionDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    singleLine = true
+                    singleLine = true,
+                    placeholder = { Text("Enter payer's name") }
                 )
                 OutlinedTextField(
                     value = payee,
@@ -101,6 +102,7 @@ fun AddTransactionDialog(
                         .fillMaxWidth()
                         .padding(16.dp),
                     singleLine = true,
+                    placeholder = { Text("Enter payee's name") }
                 )
                 OutlinedTextField(
                     value = amount,
@@ -114,6 +116,7 @@ fun AddTransactionDialog(
                         .padding(16.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
+                    placeholder = { Text("Enter numeric amount") }
                 )
                 OutlinedTextField(
                     value = description,
@@ -121,10 +124,11 @@ fun AddTransactionDialog(
                         description = if (it.length <= 200) it
                         else it.substring(0, 200)
                     },
-                    label = { Text("Description") },
+                    label = { Text("Description (optional)") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    placeholder = { Text("Enter a description (optional)") }
                 )
                 Row(
                     modifier = Modifier

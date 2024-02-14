@@ -1,5 +1,6 @@
 package com.youoweme.views
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,6 +12,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,14 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.youoweme.model.Debt
-import com.youoweme.model.Event
 import com.youoweme.model.Transaction
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.EventViewUiState
@@ -57,24 +57,28 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = uiState.event?.title.toString())
-                },
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateToHomeScreen() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            Surface(
+                shadowElevation = 4.dp
+            ){
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(text = uiState.event?.title.toString())
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { onNavigateToHomeScreen() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                imageVector = Icons.Filled.MoreVert,
+                                contentDescription = "Options"
+                            )
+                        }
                     }
-                },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "Options"
-                        )
-                    }
-                }
-            )
+                )
+            }
         },
         floatingActionButton = {
             if (navController.currentBackStackEntryAsState().value?.destination?.route == "transactions") {
@@ -86,7 +90,9 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
             }
         },
         bottomBar = {
-            BottomNavBar(navController = navController)
+            Surface (shadowElevation = 4.dp){
+                BottomNavBar(navController = navController)
+            }
         }
 
     ) { innerPadding ->
@@ -136,9 +142,7 @@ private fun EventNavigationGraph(navController: NavHostController, modifier: Mod
             TransactionsScreen(
                 modifier = modifier,
                 transactions = uiState.transactions,
-                deleteTransaction = { transaction ->
-                eventViewModel.deleteTransaction(transaction)
-                }
+                deleteTransaction = eventViewModel::deleteTransaction
             )
         }
     }
