@@ -10,22 +10,22 @@ class PersonDataSource @Inject constructor(
 
         private val personDao: PersonDao = db.personDao()
 
-        fun fetchPersons(): List<Person> {
-            val persons  = personDao.getAll()
-            return persons.map { e -> Person(e.name, e.id) }
+        fun fetchPersons(eventId : Long): List<Person> {
+            val persons  = personDao.getAll(eventId)
+            return persons.map { p -> Person(p.eventId, p.name, p.id) }
         }
 
-        fun fetchPerson(personId: Int): Person? {
-            val e = personDao.get(personId) ?: return null
-            return Person(e.name, e.id)
+        fun fetchPerson(personId: Long): Person? {
+            val p = personDao.get(personId) ?: return null
+            return Person(p.eventId, p.name, p.id)
         }
 
         fun addPerson(person: Person): Long {
-            val ee = PersonEntity(person.name)
-            return personDao.insert(ee)
+            val p = PersonEntity(person.eventId, person.name)
+            return personDao.insert(p)
         }
 
-        fun deletePerson(personId: Int) {
+        fun deletePerson(personId: Long) {
             val e = personDao.get(personId) ?: return
             personDao.delete(e)
         }
