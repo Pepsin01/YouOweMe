@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
@@ -31,10 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.youoweme.model.Person
 import com.youoweme.model.Transaction
 
 @Composable
-fun TransactionsScreen(modifier: Modifier, transactions: List<Transaction>, deleteTransaction: (Transaction) -> Unit){
+fun TransactionsScreen(modifier: Modifier, transactions: List<Transaction>, persons: List<Person>, deleteTransaction: (Transaction) -> Unit){
     if (transactions.isEmpty()) {
         Box(
             modifier = modifier
@@ -59,14 +59,19 @@ fun TransactionsScreen(modifier: Modifier, transactions: List<Transaction>, dele
                 .background(MaterialTheme.colorScheme.inverseOnSurface),
         ) {
             items(transactions) { transaction ->
-                TransactionListItem(transaction, deleteTransaction)
+                TransactionListItem(
+                    transaction,
+                    deleteTransaction,
+                    persons.find { it.id == transaction.payerId }!!,
+                    persons.find { it.id == transaction.payeeId }!!
+                )
             }
         }
     }
 }
 
 @Composable
-fun TransactionListItem(transaction: Transaction, deleteTransaction: (Transaction) -> Unit){
+fun TransactionListItem(transaction: Transaction, deleteTransaction: (Transaction) -> Unit, payer: Person, payee: Person) {
     var isAlertDialogShowing by remember { mutableStateOf(false) }
 
     fun showAlertDialog() {
@@ -95,11 +100,7 @@ fun TransactionListItem(transaction: Transaction, deleteTransaction: (Transactio
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Payer Icon",
-                )
-                Text(text = transaction.payer, fontSize = 10.sp)
+                PersonAvatar(person = payer)
             }
             Icon(
                 imageVector = Icons.Filled.ArrowForward,
@@ -122,11 +123,7 @@ fun TransactionListItem(transaction: Transaction, deleteTransaction: (Transactio
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Payee Icon",
-                )
-                Text(text = transaction.payee, fontSize = 10.sp)
+                PersonAvatar(person = payee)
             }
             Surface(
                 shape = CircleShape,

@@ -14,6 +14,7 @@ import javax.inject.Inject
 data class Person(
     val eventId: Long,
     val name: String,
+    val balance: Double = 0.0,
     val id: Long = 0
 )
 
@@ -21,6 +22,7 @@ data class Person(
 data class PersonEntity(
     @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
+    @ColumnInfo val balance: Double,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 

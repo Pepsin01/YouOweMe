@@ -124,11 +124,12 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         // Show the dialog when isDialogShowing is true
         if (isTransactionDialogShowing) {
             AddTransactionDialog(
+                persons = uiState.persons,
                 onAddTransaction = { transaction ->
                     val newTransaction = Transaction(
                         eventId = uiState.event?.id ?: 0, //TODO: handle this better
-                        payer = transaction.payer,
-                        payee = transaction.payee,
+                        payerId = transaction.payerId,
+                        payeeId = transaction.payeeId,
                         amount = transaction.amount,
                         description = transaction.description
                     )
@@ -178,13 +179,15 @@ private fun EventNavigationGraph(navController: NavHostController, modifier: Mod
             DebtsScreen(
                 modifier = modifier,
                 debts = uiState.debts,
+                persons = uiState.persons
             )
         }
         composable("transactions") {
             TransactionsScreen(
                 modifier = modifier,
                 transactions = uiState.transactions,
-                deleteTransaction = eventViewModel::deleteTransaction
+                deleteTransaction = eventViewModel::deleteTransaction,
+                persons = uiState.persons
             )
         }
     }

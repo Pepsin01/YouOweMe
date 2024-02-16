@@ -147,7 +147,7 @@ class EventViewModel(
             for (debt in _uiState.value.debts) {
                 debtsRepository.deleteDebt(debt)
             }
-            var debts = accountant?.RecalculateDebts(_uiState.value.debts, transactions)
+            var debts = accountant?.recalculateDebts(_uiState.value.debts, transactions)
             if (debts != null) {
                 for (debt in debts) {
                     debtsRepository.addDebt(debt)
