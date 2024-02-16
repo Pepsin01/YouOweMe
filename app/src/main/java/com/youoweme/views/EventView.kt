@@ -1,5 +1,6 @@
 package com.youoweme.views
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -166,14 +167,18 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
 private fun EventNavigationGraph(navController: NavHostController, modifier: Modifier, uiState: EventViewUiState, eventViewModel: EventViewModel) {
     NavHost(navController = navController, startDestination = "overview") {
         composable("overview") {
-            OverviewScreen(
-                modifier = modifier,
-            )
-            PersonScreen(
-                modifier = modifier,
-                persons = uiState.persons,
-                deletePerson = eventViewModel::deletePerson
-            )
+            Column {
+                /*
+                OverviewScreen(
+                    modifier = modifier,
+                )
+                 */
+                PersonScreen(
+                    modifier = modifier,
+                    persons = uiState.persons,
+                    deletePerson = eventViewModel::deletePerson
+                )
+            }
         }
         composable("debts") {
             DebtsScreen(

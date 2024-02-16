@@ -1,5 +1,6 @@
 package com.youoweme.views.eventdetails
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.youoweme.model.Person
@@ -33,6 +35,7 @@ fun AddPersonDialog(
     Dialog(onDismissRequest = onDismiss) {
         var name by remember { mutableStateOf("") }
         var isNameValid by remember { mutableStateOf(false) }
+        val context = LocalContext.current
 
         Card(
             modifier = Modifier
@@ -50,12 +53,13 @@ fun AddPersonDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = {
-                        name = it
+                        name = if (it.length <= 20) it
+                        else it.substring(0, 20)
                         isNameValid = it.isNotEmpty()
                     },
                     label = { Text("Name") },
                     modifier = Modifier
-                        .padding(8.dp)
+                        .padding(16.dp)
                         .fillMaxWidth(),
                     singleLine = true,
                     placeholder = { Text("Enter person's name") },
@@ -81,6 +85,9 @@ fun AddPersonDialog(
                                         name = name,
                                     )
                                 )
+                            }
+                            else {
+                                Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.padding(8.dp),

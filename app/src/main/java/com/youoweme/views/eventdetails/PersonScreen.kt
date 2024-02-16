@@ -59,7 +59,8 @@ fun PersonListItem(person: Person, deletePerson: (Person) -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             PersonAvatar(person = person)
             Spacer(modifier = Modifier.width(16.dp))
