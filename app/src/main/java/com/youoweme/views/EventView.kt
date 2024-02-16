@@ -1,6 +1,6 @@
 package com.youoweme.views
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -27,13 +27,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.youoweme.model.Person
 import com.youoweme.model.Transaction
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.EventViewUiState
+import com.youoweme.views.eventdetails.AddPersonDialog
 import com.youoweme.views.eventdetails.AddTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
 import com.youoweme.views.eventdetails.OverviewScreen
+import com.youoweme.views.eventdetails.PersonScreen
 import com.youoweme.views.eventdetails.TransactionsScreen
 
 
@@ -43,16 +46,26 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
     val uiState by eventViewModel.uiState.collectAsState()
 
     // State to track whether the dialog is showing
-    var isDialogShowing by remember { mutableStateOf(false) }
+    var isTransactionDialogShowing by remember { mutableStateOf(false) }
 
     // Function to show the dialog
     fun showAddTransactionDialog() {
-        isDialogShowing = true
+        isTransactionDialogShowing = true
     }
 
     // Function to hide the dialog
     fun hideAddTransactionDialog() {
-        isDialogShowing = false
+        isTransactionDialogShowing = false
+    }
+
+    var isPersonDialogShowing by remember { mutableStateOf(false) }
+
+    fun showAddPersonDialog() {
+        isPersonDialogShowing = true
+    }
+
+    fun hideAddPersonDialog() {
+        isPersonDialogShowing = false
     }
 
     Scaffold(
@@ -88,6 +101,13 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
             }
+            else if (navController.currentBackStackEntryAsState().value?.destination?.route == "overview") {
+                FloatingActionButton(onClick = {
+                    showAddPersonDialog()
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add")
+                }
+            }
         },
         bottomBar = {
             Surface (shadowElevation = 4.dp){
@@ -103,16 +123,16 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
             eventViewModel = eventViewModel)
 
         // Show the dialog when isDialogShowing is true
-        if (isDialogShowing) {
+        if (isTransactionDialogShowing) {
             AddTransactionDialog(
-                onAddTransaction = { transactionDetails ->
-
+                persons = uiState.persons,
+                onAddTransaction = { transaction ->
                     val newTransaction = Transaction(
                         eventId = uiState.event?.id ?: 0, //TODO: handle this better
-                        payer = transactionDetails.payer,
-                        payee = transactionDetails.payee,
-                        amount = transactionDetails.amount,
-                        description = transactionDetails.description
+                        payerId = transaction.payerId,
+                        payeeId = transaction.payeeId,
+                        amount = transaction.amount,
+                        description = transaction.description
                     )
 
                     eventViewModel.addTransaction(newTransaction)
@@ -123,6 +143,23 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                 }
             )
         }
+
+        if (isPersonDialogShowing) {
+            AddPersonDialog(
+                onAddPerson = { person ->
+                    val newPerson = Person(
+                        eventId = uiState.event?.id ?: 0, //TODO: handle this better
+                        name = person.name
+                    )
+                    eventViewModel.addPerson(newPerson)
+                    hideAddPersonDialog()
+                },
+                onDismiss = {
+                    hideAddPersonDialog()
+                }
+            )
+        }
+
     }
 }
 
@@ -130,19 +167,32 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
 private fun EventNavigationGraph(navController: NavHostController, modifier: Modifier, uiState: EventViewUiState, eventViewModel: EventViewModel) {
     NavHost(navController = navController, startDestination = "overview") {
         composable("overview") {
-            OverviewScreen(modifier = modifier)
+            Column {
+                /*
+                OverviewScreen(
+                    modifier = modifier,
+                )
+                 */
+                PersonScreen(
+                    modifier = modifier,
+                    persons = uiState.persons,
+                    deletePerson = eventViewModel::deletePerson
+                )
+            }
         }
         composable("debts") {
             DebtsScreen(
                 modifier = modifier,
                 debts = uiState.debts,
+                persons = uiState.persons
             )
         }
         composable("transactions") {
             TransactionsScreen(
                 modifier = modifier,
                 transactions = uiState.transactions,
-                deleteTransaction = eventViewModel::deleteTransaction
+                deleteTransaction = eventViewModel::deleteTransaction,
+                persons = uiState.persons
             )
         }
     }

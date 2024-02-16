@@ -9,14 +9,13 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 
 class Transaction (
     val eventId: Long,
     val amount: Double,
-    val payer: String,
-    val payee: String,
+    val payerId: Long,
+    val payeeId: Long,
     val description: String,
     val id: Long = 0
 )
@@ -25,8 +24,8 @@ class Transaction (
 data class TransactionEntity (
     @ColumnInfo val eventId: Long,
     @ColumnInfo val amount: Double,
-    @ColumnInfo val payer: String,
-    @ColumnInfo val payee: String,
+    @ColumnInfo val payerId: Long,
+    @ColumnInfo val payeeId: Long,
     @ColumnInfo val description: String,
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 )

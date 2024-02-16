@@ -11,21 +11,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-data class Person(val name: String, val id: Long)
+data class Person(
+    val eventId: Long,
+    val name: String,
+    val balance: Double = 0.0,
+    val id: Long = 0
+)
 
 @Entity
 data class PersonEntity(
+    @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
+    @ColumnInfo val balance: Double,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 
 @Dao
 interface PersonDao {
-    @Query("SELECT * FROM PersonEntity")
-    fun getAll(): List<PersonEntity>
+    @Query("SELECT * FROM PersonEntity WHERE eventId = :eventId")
+    fun getAll(eventId: Long): List<PersonEntity>
 
     @Query("SELECT * FROM PersonEntity WHERE id = :id")
-    fun get(id: Int): PersonEntity?
+    fun get(id: Long): PersonEntity?
 
     @Insert
     fun insert(personEntity: PersonEntity): Long
@@ -38,15 +45,15 @@ class PersonsRepository @Inject constructor(
     private val personsDataSource: PersonDataSource
 )
 {
-    suspend fun fetchPerson(personId: Int): Person? {
+    suspend fun fetchPerson(personId: Long): Person? {
         return withContext(Dispatchers.IO) {
             personsDataSource.fetchPerson(personId)
         }
     }
 
-    suspend fun fetchPersons(): List<Person> {
+    suspend fun fetchPersons(eventId: Long): List<Person> {
         return withContext(Dispatchers.IO) {
-            personsDataSource.fetchPersons()
+            personsDataSource.fetchPersons(eventId)
         }
     }
 
@@ -56,7 +63,7 @@ class PersonsRepository @Inject constructor(
         }
     }
 
-    suspend fun deletePerson(personId: Int) {
+    suspend fun deletePerson(personId: Long) {
         return withContext(Dispatchers.IO) {
             personsDataSource.deletePerson(personId)
         }

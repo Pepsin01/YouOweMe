@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,9 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.youoweme.model.Debt
+import com.youoweme.model.Person
 
 @Composable
-fun DebtsScreen(modifier: Modifier, debts: List<Debt>) {
+fun DebtsScreen(modifier: Modifier, debts: List<Debt>, persons: List<Person>) {
     if (debts.isEmpty()) {
         Box(
             modifier = modifier
@@ -50,14 +50,18 @@ fun DebtsScreen(modifier: Modifier, debts: List<Debt>) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             items(debts) { debt ->
-                DebtListItem(debt)
+                DebtListItem(
+                    debt,
+                    persons.find { it.id == debt.debtorId }!!,
+                    persons.find { it.id == debt.creditorId }!!
+                )
             }
         }
     }
 }
 
 @Composable
-fun DebtListItem(debt: Debt) {
+fun DebtListItem(debt: Debt, debtor: Person, creditor: Person) {
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -75,11 +79,7 @@ fun DebtListItem(debt: Debt) {
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Payer Icon",
-                )
-                Text(text = debt.debtor, fontSize = 10.sp)
+                PersonAvatar(person = debtor)
             }
             Icon(
                 imageVector = Icons.Filled.ArrowForward,
@@ -101,11 +101,7 @@ fun DebtListItem(debt: Debt) {
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Payee Icon",
-                )
-                Text(text = debt.creditor, fontSize = 10.sp)
+                PersonAvatar(person = creditor)
             }
         }
     }

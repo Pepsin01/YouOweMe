@@ -7,6 +7,8 @@ import com.youoweme.model.Event
 import com.youoweme.model.EventsRepository
 import com.youoweme.model.Debt
 import com.youoweme.model.DebtsRepository
+import com.youoweme.model.Person
+import com.youoweme.model.PersonsRepository
 import com.youoweme.model.Transaction
 import com.youoweme.model.TransactionsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ data class EventViewUiState(
     val event: Event?,
     val debts: List<Debt>,
     val transactions: List<Transaction>,
+    val persons: List<Person>
 )
 
 class EventViewModel(
@@ -26,10 +29,11 @@ class EventViewModel(
     private var eventsRepository: EventsRepository,
     private var debtsRepository: DebtsRepository,
     private var transactionsRepository: TransactionsRepository,
+    private var personsRepository: PersonsRepository
 ) : ViewModel() {
 
 
-    private val _uiState = MutableStateFlow(EventViewUiState(null, listOf(), listOf()))
+    private val _uiState = MutableStateFlow(EventViewUiState(null, listOf(), listOf(), listOf()))
     val uiState: StateFlow<EventViewUiState> = _uiState.asStateFlow()
     private var accountant: Accountant? = null //TODO: do this in a better way
 
@@ -38,6 +42,8 @@ class EventViewModel(
             try {
                 val event = eventsRepository.fetchEvent(eventId)
                     ?: throw IllegalArgumentException("There is no event with id of $eventId")
+
+                val persons = personsRepository.fetchPersons(eventId.toLong())
 
                 val debts = debtsRepository.fetchDebts(eventId.toLong())
 
@@ -48,6 +54,7 @@ class EventViewModel(
                 _uiState.update { currState ->
                     currState.copy(
                         event = event,
+                        persons = persons,
                         debts = debts,
                         transactions = transactions,
                     )
@@ -106,13 +113,41 @@ class EventViewModel(
         }
     }
 
+    fun addPerson(person: Person) {
+        viewModelScope.launch {
+            personsRepository.addPerson(person)
+
+            val persons = personsRepository.fetchPersons(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    persons = persons,
+                )
+            }
+        }
+    }
+
+    fun deletePerson(person: Person) {
+        viewModelScope.launch {
+            personsRepository.deletePerson(person.id)
+
+            val persons = personsRepository.fetchPersons(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    persons = persons,
+                )
+            }
+        }
+    }
+
     private fun updateDebts() {
         viewModelScope.launch {
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
             for (debt in _uiState.value.debts) {
                 debtsRepository.deleteDebt(debt)
             }
-            var debts = accountant?.RecalculateDebts(_uiState.value.debts, transactions)
+            var debts = accountant?.recalculateDebts(_uiState.value.debts, transactions)
             if (debts != null) {
                 for (debt in debts) {
                     debtsRepository.addDebt(debt)

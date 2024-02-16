@@ -12,16 +12,16 @@ import javax.inject.Inject
 class Debt (
     val eventId: Long,
     var amount: Double,
-    val debtor: String,
-    val creditor: String,
+    val debtorId: Long,
+    val creditorId: Long,
     val id: Long = 0
 )
 
 @Entity
 data class DebtEntity (
     @ColumnInfo val amount: Double,
-    @ColumnInfo val debtor: String,
-    @ColumnInfo val creditor: String,
+    @ColumnInfo val debtorId: Long,
+    @ColumnInfo val creditorId: Long,
     @ColumnInfo val eventId: Long,
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
 )

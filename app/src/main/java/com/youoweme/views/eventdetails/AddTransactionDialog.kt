@@ -1,5 +1,6 @@
 package com.youoweme.views.eventdetails
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,13 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,30 +27,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.youoweme.model.Person
 import com.youoweme.model.Transaction
-import java.util.Date
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionDialog(
+    persons: List<Person>,
     onAddTransaction: (transactionDetails: Transaction) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val blankPerson = Person(
+        0,
+        "None",
+        id = -1
+    )
+
     Dialog(onDismissRequest = { onDismiss() }) {
         var payer by remember {
-            mutableStateOf("")
+            mutableStateOf(blankPerson)
         }
-        var isPayerValid by remember {
+        var payerDropdownExpanded by remember {
             mutableStateOf(false)
         }
         var payee by remember {
-            mutableStateOf("")
+            mutableStateOf(blankPerson)
         }
-        var isPayeeValid by remember {
+        var payeeDropdownExpanded by remember {
             mutableStateOf(false)
         }
         var amount by remember {
@@ -59,6 +70,8 @@ fun AddTransactionDialog(
         var description by remember {
             mutableStateOf("")
         }
+        val context = LocalContext.current
+
 
         Card(
             modifier = Modifier
@@ -74,36 +87,64 @@ fun AddTransactionDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                OutlinedTextField(
-                    value = payer,
-                    onValueChange = {
-                        payer = if (it.length <= 20) it
-                        else it.substring(0, 20)
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.padding(16.dp),
+                    expanded = payerDropdownExpanded,
+                    onExpandedChange = {
+                        payerDropdownExpanded = !payerDropdownExpanded
+                    }) {
+                    OutlinedTextField(
+                        value = payer.name,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = payerDropdownExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
 
-                        isPayerValid = payer.isNotEmpty()
-                    },
-                    label = { Text("Payer") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    singleLine = true,
-                    placeholder = { Text("Enter payer's name") }
-                )
-                OutlinedTextField(
-                    value = payee,
-                    onValueChange = {
-                        payee = if (it.length <= 20) it
-                        else it.substring(0, 20)
+                    ExposedDropdownMenu(
+                        expanded = payerDropdownExpanded,
+                        onDismissRequest = { payerDropdownExpanded = false },
+                    ) {
+                        persons.forEach { item ->
+                            DropdownMenuItem(
+                                text = { Text(text = item.name) },
+                                onClick = {
+                                    payer = item
+                                    payerDropdownExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.padding(16.dp),
+                    expanded = payeeDropdownExpanded,
+                    onExpandedChange = {
+                        payeeDropdownExpanded = !payeeDropdownExpanded
+                    }) {
+                    OutlinedTextField(
+                        value = payee.name,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = payeeDropdownExpanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
 
-                        isPayeeValid = payee.isNotEmpty()
-                    },
-                    label = { Text("Payee") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    singleLine = true,
-                    placeholder = { Text("Enter payee's name") }
-                )
+                    ExposedDropdownMenu(
+                        expanded = payeeDropdownExpanded,
+                        onDismissRequest = { payeeDropdownExpanded = false },
+                    ) {
+                        persons.forEach { item ->
+                            DropdownMenuItem(
+                                text = { Text(text = item.name) },
+                                onClick = {
+                                    payee = item
+                                    payeeDropdownExpanded = false
+                                },
+                            )
+                        }
+                    }
+                }
                 OutlinedTextField(
                     value = amount,
                     onValueChange = {
@@ -143,16 +184,25 @@ fun AddTransactionDialog(
                     }
                     TextButton(
                         onClick = {
-                            if (isPayerValid && isPayeeValid && isAmountValid) {
+                            if (payer.id != payee.id && payer.id != (-1).toLong() && payee.id != (-1).toLong() && isAmountValid) {
                                 onAddTransaction(
                                     Transaction(
                                         eventId = 0,
                                         amount = amount.toDouble(),
-                                        payer = payer,
-                                        payee = payee,
+                                        payerId = payer.id,
+                                        payeeId = payee.id,
                                         description = description
                                     )
                                 )
+                            }
+                            else if(payer.id == payee.id) {
+                                Toast.makeText(context, "Payer and payee cannot be the same", Toast.LENGTH_SHORT).show()
+                            }
+                            else if(payer.id == (-1).toLong() || payee.id == (-1).toLong()) {
+                                Toast.makeText(context, "Payer and payee cannot be empty", Toast.LENGTH_SHORT).show()
+                            }
+                            else {
+                                Toast.makeText(context, "Amount cannot be empty or non-numeric", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.padding(8.dp),
