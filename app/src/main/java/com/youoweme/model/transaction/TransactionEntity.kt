@@ -1,4 +1,4 @@
-package com.youoweme.model
+package com.youoweme.model.transaction
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao

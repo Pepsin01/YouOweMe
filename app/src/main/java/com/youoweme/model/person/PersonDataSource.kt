@@ -1,5 +1,6 @@
-package com.youoweme.model
+package com.youoweme.model.person
 
+import com.youoweme.model.YouOweMeDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
 

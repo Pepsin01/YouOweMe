@@ -2,8 +2,8 @@ package com.youoweme.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.youoweme.model.Event
-import com.youoweme.model.EventsRepository
+import com.youoweme.model.event.Event
+import com.youoweme.model.event.EventsRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

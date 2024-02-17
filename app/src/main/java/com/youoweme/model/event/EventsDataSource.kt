@@ -1,23 +1,23 @@
-package com.youoweme.model
+package com.youoweme.model.event
 
-import androidx.room.PrimaryKey
+import com.youoweme.model.YouOweMeDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class EventsDataSource @Inject constructor(
-    private val db: YouOweMeDatabase
+    db: YouOweMeDatabase
 ) {
 
     private val eventDao: EventDao = db.eventDao()
 
     fun fetchEvents(): List<Event> {
-        val events  = eventDao.getAll();
+        val events  = eventDao.getAll()
         return events.map { e -> Event(e.title, e.id) }
     }
 
     fun fetchEvent(eventId: Int): Event? {
-        val e = eventDao.get(eventId) ?: return null;
+        val e = eventDao.get(eventId) ?: return null
         return Event(e.title, e.id)
     }
 

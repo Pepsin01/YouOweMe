@@ -1,7 +1,7 @@
 package com.youoweme.algorithms
 
-import com.youoweme.model.Debt
-import com.youoweme.model.Transaction
+import com.youoweme.model.debt.Debt
+import com.youoweme.model.transaction.Transaction
 
 class Accountant(private val eventId: Long) {
     //Dumb algorithm that recalculates debts based on transactions

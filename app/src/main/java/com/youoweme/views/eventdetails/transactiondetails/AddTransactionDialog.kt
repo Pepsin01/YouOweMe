@@ -1,4 +1,4 @@
-package com.youoweme.views.eventdetails
+package com.youoweme.views.eventdetails.transactiondetails
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.youoweme.model.Person
-import com.youoweme.model.Transaction
+import com.youoweme.model.person.Person
+import com.youoweme.model.transaction.Transaction
 
 
 @OptIn(ExperimentalMaterial3Api::class)

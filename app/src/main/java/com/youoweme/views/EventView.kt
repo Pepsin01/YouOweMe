@@ -27,15 +27,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.youoweme.model.Person
-import com.youoweme.model.Transaction
+import com.youoweme.model.person.Person
+import com.youoweme.model.transaction.Transaction
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.EventViewUiState
-import com.youoweme.views.eventdetails.AddPersonDialog
-import com.youoweme.views.eventdetails.AddTransactionDialog
+import com.youoweme.views.eventdetails.persondetails.AddPersonDialog
+import com.youoweme.views.eventdetails.transactiondetails.AddTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
-import com.youoweme.views.eventdetails.OverviewScreen
 import com.youoweme.views.eventdetails.PersonScreen
 import com.youoweme.views.eventdetails.TransactionsScreen
 

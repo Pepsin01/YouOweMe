@@ -12,10 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.youoweme.model.DebtsRepository
-import com.youoweme.model.EventsRepository
-import com.youoweme.model.PersonsRepository
-import com.youoweme.model.TransactionsRepository
+import com.youoweme.model.debt.DebtsRepository
+import com.youoweme.model.event.EventsRepository
+import com.youoweme.model.person.PersonsRepository
+import com.youoweme.model.transaction.TransactionsRepository
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.HomeScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,7 +68,7 @@ fun App(eventsRepository: EventsRepository,
             arguments = listOf(navArgument("eventId") {type = NavType.IntType })) {
             backStackEntry ->
             val eventId = backStackEntry.arguments?.getInt("eventId")
-                ?: throw IllegalArgumentException("Navigated with wrong event id");
+                ?: throw IllegalArgumentException("Navigated with wrong event id")
 
             EventView(
                 onNavigateToHomeScreen = { navController.navigate("homeScreen") },

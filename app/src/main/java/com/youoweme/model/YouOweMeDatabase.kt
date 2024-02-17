@@ -4,12 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.youoweme.model.debt.DebtDao
+import com.youoweme.model.debt.DebtEntity
+import com.youoweme.model.event.EventDao
+import com.youoweme.model.event.EventEntity
+import com.youoweme.model.person.PersonDao
+import com.youoweme.model.person.PersonEntity
+import com.youoweme.model.transaction.TransactionDao
+import com.youoweme.model.transaction.TransactionEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Database(entities = [EventEntity::class, DebtEntity::class, TransactionEntity::class, PersonEntity::class], version = 1)

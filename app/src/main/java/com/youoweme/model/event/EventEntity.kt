@@ -1,4 +1,4 @@
-package com.youoweme.model
+package com.youoweme.model.event
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
