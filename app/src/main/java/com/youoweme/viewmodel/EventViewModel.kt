@@ -81,6 +81,20 @@ class EventViewModel(
         }
     }
 
+    fun settleDebt(debt: Debt) {
+        viewModelScope.launch {
+            addTransaction(
+                Transaction(
+                    eventId = eventId.toLong(),
+                    amount = debt.amount,
+                    payerId = debt.debtorId,
+                    payeeId = debt.creditorId,
+                    description = "Settling a debt"
+                )
+            )
+        }
+    }
+
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch {
             transactionsRepository.addTransaction(transaction)
@@ -92,7 +106,6 @@ class EventViewModel(
                     transactions = transactions,
                 )
             }
-
             updateDebts()
         }
     }
@@ -100,6 +113,21 @@ class EventViewModel(
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             transactionsRepository.deleteTransaction(transaction)
+
+            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    transactions = transactions,
+                )
+            }
+            updateDebts()
+        }
+    }
+
+    fun updateTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            transactionsRepository.updateTransaction(transaction)
 
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
@@ -129,7 +157,31 @@ class EventViewModel(
 
     fun deletePerson(person: Person) {
         viewModelScope.launch {
+
+            for (transaction in _uiState.value.transactions) {
+                if (transaction.payerId == person.id || transaction.payeeId == person.id) {
+                    transactionsRepository.deleteTransaction(transaction)
+                }
+            }
+
             personsRepository.deletePerson(person.id)
+
+            val persons = personsRepository.fetchPersons(eventId.toLong())
+            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    persons = persons,
+                    transactions = transactions,
+                )
+            }
+            updateDebts()
+        }
+    }
+
+    fun updatePerson(person: Person) {
+        viewModelScope.launch {
+            personsRepository.updatePerson(person)
 
             val persons = personsRepository.fetchPersons(eventId.toLong())
 
@@ -141,6 +193,7 @@ class EventViewModel(
         }
     }
 
+    //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())

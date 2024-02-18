@@ -30,4 +30,9 @@ class PersonDataSource @Inject constructor(
             val e = personDao.get(personId) ?: return
             personDao.delete(e)
         }
+
+        fun updatePerson(person: Person) {
+            val p = PersonEntity(person.eventId, person.name, person.balance, person.id)
+            personDao.update(p)
+        }
 }

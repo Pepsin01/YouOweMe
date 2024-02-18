@@ -14,7 +14,12 @@ import com.youoweme.model.person.Person
 import com.youoweme.views.eventdetails.persondetails.PersonListItem
 
 @Composable
-fun PersonScreen(modifier: Modifier, persons: List<Person>, deletePerson: (Person) -> Unit) {
+fun PersonScreen(
+    modifier: Modifier,
+    persons: List<Person>,
+    deletePerson: (Person) -> Unit,
+    updatePerson: (Person) -> Unit
+) {
     if (persons.isEmpty()) {
         Box(
             modifier = modifier
@@ -38,7 +43,7 @@ fun PersonScreen(modifier: Modifier, persons: List<Person>, deletePerson: (Perso
                 .background(MaterialTheme.colorScheme.inverseOnSurface),
         ) {
             items(persons) { person ->
-                PersonListItem(person, deletePerson)
+                PersonListItem(person, deletePerson, updatePerson)
             }
         }
     }

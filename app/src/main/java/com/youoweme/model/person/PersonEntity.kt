@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
+import androidx.room.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -39,6 +40,9 @@ interface PersonDao {
 
     @Delete
     fun delete(personEntity: PersonEntity)
+
+    @Update
+    fun update(personEntity: PersonEntity)
 }
 
 class PersonsRepository @Inject constructor(
@@ -66,6 +70,12 @@ class PersonsRepository @Inject constructor(
     suspend fun deletePerson(personId: Long) {
         return withContext(Dispatchers.IO) {
             personsDataSource.deletePerson(personId)
+        }
+    }
+
+    suspend fun updatePerson(person: Person) {
+        return withContext(Dispatchers.IO) {
+            personsDataSource.updatePerson(person)
         }
     }
 }
