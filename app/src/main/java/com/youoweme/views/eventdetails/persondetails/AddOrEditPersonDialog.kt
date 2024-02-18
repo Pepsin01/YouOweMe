@@ -26,15 +26,23 @@ import androidx.compose.ui.window.Dialog
 import com.youoweme.model.person.Person
 
 @Composable
-fun AddPersonDialog(
-    onAddPerson: (person: Person) -> Unit,
+fun AddOrEditPersonDialog(
+    editedPerson: Person?,
+    onEditPerson: (Person) -> Unit,
+    onAddPerson: (Person) -> Unit,
     onDismiss: () -> Unit
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        var name by remember { mutableStateOf("") }
-        var isNameValid by remember { mutableStateOf(false) }
-        val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
 
+    var isNameValid by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    if (editedPerson != null) {
+        name = editedPerson.name
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,6 +85,24 @@ fun AddPersonDialog(
                     TextButton(
                         onClick = {
                             if (isNameValid) {
+                                if (editedPerson != null) {
+                                    onEditPerson(
+                                        Person(
+                                            eventId = editedPerson.eventId,
+                                            name = name,
+                                            id = editedPerson.id,
+                                            balance = editedPerson.balance
+                                        )
+                                    )
+                                }
+                                else {
+                                    onAddPerson(
+                                        Person(
+                                            eventId = 0,
+                                            name = name,
+                                        )
+                                    )
+                                }
                                 onAddPerson(
                                     Person(
                                         eventId = 0,
@@ -90,7 +116,12 @@ fun AddPersonDialog(
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Add Person")
+                        if (editedPerson != null) {
+                            Text("Edit Person")
+                        }
+                        else {
+                            Text("Add Person")
+                        }
                     }
                 }
             }

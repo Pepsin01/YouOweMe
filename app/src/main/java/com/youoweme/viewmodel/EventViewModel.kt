@@ -157,7 +157,31 @@ class EventViewModel(
 
     fun deletePerson(person: Person) {
         viewModelScope.launch {
+
+            for (transaction in _uiState.value.transactions) {
+                if (transaction.payerId == person.id || transaction.payeeId == person.id) {
+                    transactionsRepository.deleteTransaction(transaction)
+                }
+            }
+
             personsRepository.deletePerson(person.id)
+
+            val persons = personsRepository.fetchPersons(eventId.toLong())
+            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    persons = persons,
+                    transactions = transactions,
+                )
+            }
+            updateDebts()
+        }
+    }
+
+    fun updatePerson(person: Person) {
+        viewModelScope.launch {
+            personsRepository.updatePerson(person)
 
             val persons = personsRepository.fetchPersons(eventId.toLong())
 

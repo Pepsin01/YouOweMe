@@ -31,7 +31,7 @@ import com.youoweme.model.person.Person
 import com.youoweme.model.transaction.Transaction
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.EventViewUiState
-import com.youoweme.views.eventdetails.persondetails.AddPersonDialog
+import com.youoweme.views.eventdetails.persondetails.AddOrEditPersonDialog
 import com.youoweme.views.eventdetails.transactiondetails.AddOrEditTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
@@ -52,9 +52,18 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
 
     var transactionToEdit by remember { mutableStateOf<Transaction?>(null) }
 
+    var isUpdatePersonDialogShowing by remember { mutableStateOf(false) }
+
+    var personToUpdate by remember { mutableStateOf<Person?>(null) }
+
     fun editTransaction(transaction: Transaction) {
         transactionToEdit = transaction
         isEditTransactionDialogShowing = true
+    }
+
+    fun updatePerson(person: Person) {
+        personToUpdate = person
+        isUpdatePersonDialogShowing = true
     }
 
     Scaffold(
@@ -110,7 +119,8 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
             modifier = Modifier.padding(innerPadding),
             uiState = uiState,
             eventViewModel = eventViewModel,
-            editTransaction = { transaction -> editTransaction(transaction)}
+            editTransaction = ::editTransaction,
+            updatePerson = ::updatePerson
         )
 
         // Show the dialog when isDialogShowing is true
@@ -153,7 +163,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         }
 
         if (isPersonDialogShowing) {
-            AddPersonDialog(
+            AddOrEditPersonDialog(
                 onAddPerson = { person ->
                     val newPerson = Person(
                         eventId = uiState.event?.id ?: 0, //TODO: handle this better
@@ -164,6 +174,22 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                 },
                 onDismiss = {
                     isPersonDialogShowing = false
+                },
+                editedPerson = null,
+                onEditPerson = {}
+            )
+        }
+
+        if (isUpdatePersonDialogShowing) {
+            AddOrEditPersonDialog(
+                onAddPerson = {},
+                onDismiss = {
+                    isUpdatePersonDialogShowing = false
+                },
+                editedPerson = personToUpdate,
+                onEditPerson = { person ->
+                    eventViewModel.updatePerson(person)
+                    isUpdatePersonDialogShowing = false
                 }
             )
         }
@@ -176,7 +202,8 @@ private fun EventNavigationGraph(
     modifier: Modifier,
     uiState: EventViewUiState,
     eventViewModel: EventViewModel,
-    editTransaction: (Transaction) -> Unit
+    editTransaction: (Transaction) -> Unit,
+    updatePerson: (Person) -> Unit
 ) {
     NavHost(navController = navController, startDestination = "overview") {
         composable("overview") {
@@ -189,7 +216,8 @@ private fun EventNavigationGraph(
                 PersonScreen(
                     modifier = modifier,
                     persons = uiState.persons,
-                    deletePerson = eventViewModel::deletePerson
+                    deletePerson = eventViewModel::deletePerson,
+                    updatePerson = updatePerson
                 )
             }
         }
