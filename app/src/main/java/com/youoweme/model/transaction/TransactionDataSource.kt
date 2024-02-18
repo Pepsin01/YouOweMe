@@ -30,4 +30,9 @@ class TransactionDataSource @Inject constructor(
         val t = transactionDao.get(transaction.id) ?: return
         transactionDao.delete(t)
     }
+
+    fun updateTransaction(transaction: Transaction) {
+        val t = TransactionEntity(transaction.eventId, transaction.amount, transaction.payerId, transaction.payeeId, transaction.description, transaction.id)
+        transactionDao.update(t)
+    }
 }

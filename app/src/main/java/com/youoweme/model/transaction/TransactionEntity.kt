@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
+import androidx.room.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,6 +44,9 @@ interface TransactionDao {
 
     @Delete
     fun delete(transactionEntity: TransactionEntity)
+
+    @Update
+    fun update(transactionEntity: TransactionEntity)
 }
 
 class TransactionsRepository @Inject constructor(
@@ -70,6 +74,12 @@ class TransactionsRepository @Inject constructor(
     suspend fun deleteTransaction(transaction: Transaction) {
         return withContext(Dispatchers.IO) {
             transactionDataSource.deleteTransaction(transaction)
+        }
+    }
+
+    suspend fun updateTransaction(transaction: Transaction) {
+        return withContext(Dispatchers.IO) {
+            transactionDataSource.updateTransaction(transaction)
         }
     }
 }

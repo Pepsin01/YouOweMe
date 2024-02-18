@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,9 +38,11 @@ import com.youoweme.model.transaction.Transaction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTransactionDialog(
+fun AddOrEditTransactionDialog(
+    editedTransaction: Transaction?,
     persons: List<Person>,
-    onAddTransaction: (transactionDetails: Transaction) -> Unit,
+    onEditTransaction: (transaction: Transaction) -> Unit,
+    onAddTransaction: (transaction: Transaction) -> Unit,
     onDismiss: () -> Unit
 ) {
     val blankPerson = Person(
@@ -47,32 +50,34 @@ fun AddTransactionDialog(
         "None",
         id = -1
     )
+    var payer by remember {
+        mutableStateOf(blankPerson)
+    }
+    var payerDropdownExpanded by remember {
+        mutableStateOf(false)
+    }
+    var payee by remember {
+        mutableStateOf(blankPerson)
+    }
+    var payeeDropdownExpanded by remember {
+        mutableStateOf(false)
+    }
+    var amount by remember {
+        mutableDoubleStateOf(0.0)
+    }
+    var description by remember {
+        mutableStateOf("")
+    }
+    val context = LocalContext.current
+
+    if (editedTransaction != null) {
+        payer = persons.find { it.id == editedTransaction.payerId } ?: blankPerson
+        payee = persons.find { it.id == editedTransaction.payeeId } ?: blankPerson
+        amount = editedTransaction.amount
+        description = editedTransaction.description
+    }
 
     Dialog(onDismissRequest = { onDismiss() }) {
-        var payer by remember {
-            mutableStateOf(blankPerson)
-        }
-        var payerDropdownExpanded by remember {
-            mutableStateOf(false)
-        }
-        var payee by remember {
-            mutableStateOf(blankPerson)
-        }
-        var payeeDropdownExpanded by remember {
-            mutableStateOf(false)
-        }
-        var amount by remember {
-            mutableStateOf("")
-        }
-        var isAmountValid by remember {
-            mutableStateOf(false)
-        }
-        var description by remember {
-            mutableStateOf("")
-        }
-        val context = LocalContext.current
-
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -146,10 +151,9 @@ fun AddTransactionDialog(
                     }
                 }
                 OutlinedTextField(
-                    value = amount,
+                    value = if (amount == 0.0) "" else amount.toString(),
                     onValueChange = {
-                        amount = it
-                        isAmountValid = amount.isNotEmpty() && amount.toDoubleOrNull() != null
+                        amount = it.toDoubleOrNull() ?: 0.0
                     },
                     label = { Text("Amount") },
                     modifier = Modifier
@@ -184,30 +188,45 @@ fun AddTransactionDialog(
                     }
                     TextButton(
                         onClick = {
-                            if (payer.id != payee.id && payer.id != (-1).toLong() && payee.id != (-1).toLong() && isAmountValid) {
-                                onAddTransaction(
-                                    Transaction(
-                                        eventId = 0,
-                                        amount = amount.toDouble(),
-                                        payerId = payer.id,
-                                        payeeId = payee.id,
-                                        description = description
+                            if (payer.id != payee.id && payer.id != (-1).toLong() && payee.id != (-1).toLong()) {
+                                if (editedTransaction != null) {
+                                    onEditTransaction(
+                                        Transaction(
+                                            editedTransaction.eventId,
+                                            amount,
+                                            payer.id,
+                                            payee.id,
+                                            description,
+                                            editedTransaction.id
+                                        )
                                     )
-                                )
+                                } else {
+                                    onAddTransaction(
+                                        Transaction(
+                                            0,
+                                            amount,
+                                            payer.id,
+                                            payee.id,
+                                            description
+                                        )
+                                    )
+                                }
+                                onDismiss()
                             }
                             else if(payer.id == payee.id) {
                                 Toast.makeText(context, "Payer and payee cannot be the same", Toast.LENGTH_SHORT).show()
                             }
-                            else if(payer.id == (-1).toLong() || payee.id == (-1).toLong()) {
-                                Toast.makeText(context, "Payer and payee cannot be empty", Toast.LENGTH_SHORT).show()
-                            }
                             else {
-                                Toast.makeText(context, "Amount cannot be empty or non-numeric", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Payer and payee cannot be empty", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Text("Add Transaction")
+                        if (editedTransaction != null) {
+                            Text("Save Changes")
+                        } else {
+                            Text("Add Transaction")
+                        }
                     }
                 }
             }

@@ -17,7 +17,13 @@ import com.youoweme.model.transaction.Transaction
 import com.youoweme.views.eventdetails.transactiondetails.TransactionListItem
 
 @Composable
-fun TransactionsScreen(modifier: Modifier, transactions: List<Transaction>, persons: List<Person>, deleteTransaction: (Transaction) -> Unit){
+fun TransactionsScreen(
+    modifier: Modifier,
+    transactions: List<Transaction>,
+    persons: List<Person>,
+    deleteTransaction: (Transaction) -> Unit,
+    editTransaction: (Transaction) -> Unit
+){
     if (transactions.isEmpty()) {
         Box(
             modifier = modifier
@@ -43,10 +49,11 @@ fun TransactionsScreen(modifier: Modifier, transactions: List<Transaction>, pers
         ) {
             items(transactions) { transaction ->
                 TransactionListItem(
-                    transaction,
-                    deleteTransaction,
-                    persons.find { it.id == transaction.payerId }!!,
-                    persons.find { it.id == transaction.payeeId }!!
+                    transaction = transaction,
+                    editTransaction = editTransaction,
+                    deleteTransaction = deleteTransaction,
+                    payer = persons.find { it.id == transaction.payerId }!!,
+                    payee = persons.find { it.id == transaction.payeeId }!!
                 )
             }
         }

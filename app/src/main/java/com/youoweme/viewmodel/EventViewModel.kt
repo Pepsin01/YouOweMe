@@ -113,6 +113,22 @@ class EventViewModel(
         }
     }
 
+    fun updateTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            transactionsRepository.updateTransaction(transaction)
+
+            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+
+            _uiState.update { currState ->
+                currState.copy(
+                    transactions = transactions,
+                )
+            }
+
+            updateDebts()
+        }
+    }
+
     fun addPerson(person: Person) {
         viewModelScope.launch {
             personsRepository.addPerson(person)
