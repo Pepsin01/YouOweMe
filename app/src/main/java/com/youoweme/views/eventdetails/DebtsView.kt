@@ -17,7 +17,7 @@ import com.youoweme.model.person.Person
 import com.youoweme.views.eventdetails.debtdetails.DebtListItem
 
 @Composable
-fun DebtsScreen(modifier: Modifier, debts: List<Debt>, persons: List<Person>) {
+fun DebtsScreen(modifier: Modifier, debts: List<Debt>, persons: List<Person>, settleDebt: (Debt) -> Unit) {
     if (debts.isEmpty()) {
         Box(
             modifier = modifier
@@ -46,7 +46,8 @@ fun DebtsScreen(modifier: Modifier, debts: List<Debt>, persons: List<Person>) {
                 DebtListItem(
                     debt,
                     persons.find { it.id == debt.debtorId }!!,
-                    persons.find { it.id == debt.creditorId }!!
+                    persons.find { it.id == debt.creditorId }!!,
+                    settleDebt
                 )
             }
         }

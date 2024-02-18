@@ -81,6 +81,20 @@ class EventViewModel(
         }
     }
 
+    fun settleDebt(debt: Debt) {
+        viewModelScope.launch {
+            addTransaction(
+                Transaction(
+                    eventId = eventId.toLong(),
+                    amount = debt.amount,
+                    payerId = debt.debtorId,
+                    payeeId = debt.creditorId,
+                    description = "Settling a debt"
+                )
+            )
+        }
+    }
+
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch {
             transactionsRepository.addTransaction(transaction)
@@ -92,7 +106,6 @@ class EventViewModel(
                     transactions = transactions,
                 )
             }
-
             updateDebts()
         }
     }
@@ -108,7 +121,6 @@ class EventViewModel(
                     transactions = transactions,
                 )
             }
-
             updateDebts()
         }
     }
@@ -157,6 +169,7 @@ class EventViewModel(
         }
     }
 
+    //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())

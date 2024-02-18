@@ -197,7 +197,8 @@ private fun EventNavigationGraph(
             DebtsScreen(
                 modifier = modifier,
                 debts = uiState.debts,
-                persons = uiState.persons
+                persons = uiState.persons,
+                settleDebt = eventViewModel::settleDebt
             )
         }
         composable("transactions") {
