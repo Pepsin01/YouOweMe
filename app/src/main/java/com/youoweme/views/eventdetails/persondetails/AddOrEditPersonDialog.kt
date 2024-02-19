@@ -103,12 +103,6 @@ fun AddOrEditPersonDialog(
                                         )
                                     )
                                 }
-                                onAddPerson(
-                                    Person(
-                                        eventId = 0,
-                                        name = name,
-                                    )
-                                )
                             }
                             else {
                                 Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show()
