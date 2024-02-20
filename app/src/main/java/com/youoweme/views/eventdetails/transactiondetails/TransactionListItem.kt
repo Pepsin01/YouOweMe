@@ -81,7 +81,7 @@ fun TransactionListItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(2F)
             ) {
-                Text(text = transaction.amount.toString(), fontSize = 20.sp)
+                Text(text = transaction.amount.toString() + " €", fontSize = 20.sp)
             }
 
             Icon(

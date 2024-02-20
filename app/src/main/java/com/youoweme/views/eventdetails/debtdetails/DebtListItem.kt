@@ -70,7 +70,7 @@ fun DebtListItem(debt: Debt, debtor: Person, creditor: Person, settleDebt: (Debt
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(2F)
             ) {
-                Text(text = debt.amount.toString(), fontSize = 20.sp)
+                Text(text = debt.amount.toString() + " €", fontSize = 20.sp)
             }
             Icon(
                 imageVector = Icons.Filled.ArrowForward,

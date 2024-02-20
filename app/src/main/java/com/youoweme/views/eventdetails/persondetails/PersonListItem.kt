@@ -69,7 +69,7 @@ fun PersonListItem(person: Person, deletePerson: (Person) -> Unit, updatePerson:
             Spacer(modifier = Modifier.weight(1F))
             Column {
                 Text(
-                    text = if (person.balance < 0) "-" + person.balance.toString() else person.balance.toString(),
+                    text = if (person.balance < 0) "-" + person.balance.toString() else person.balance.toString() + " €",
                     color = if (person.balance < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             }
