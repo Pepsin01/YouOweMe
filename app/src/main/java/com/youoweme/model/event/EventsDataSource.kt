@@ -25,4 +25,14 @@ class EventsDataSource @Inject constructor(
         val ee = EventEntity(event.title)
         return eventDao.insert(ee)
     }
+
+    fun deleteEvent(event: Event) {
+        val ee = EventEntity(event.title, event.id)
+        eventDao.delete(ee)
+    }
+
+    fun updateEvent(event: Event) {
+        val ee = EventEntity(event.title, event.id)
+        eventDao.update(ee)
+    }
 }

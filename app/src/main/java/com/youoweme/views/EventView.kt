@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -35,6 +37,8 @@ import com.youoweme.views.eventdetails.persondetails.AddOrEditPersonDialog
 import com.youoweme.views.eventdetails.transactiondetails.AddOrEditTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
+import com.youoweme.views.eventdetails.DeleteEventDialog
+import com.youoweme.views.eventdetails.EditEventDialog
 import com.youoweme.views.eventdetails.PersonScreen
 import com.youoweme.views.eventdetails.TransactionsScreen
 
@@ -55,6 +59,11 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
     var isUpdatePersonDialogShowing by remember { mutableStateOf(false) }
 
     var personToUpdate by remember { mutableStateOf<Person?>(null) }
+
+    var showMenu by remember { mutableStateOf(false) }
+
+    var isDeleteEventDialogShowing by remember { mutableStateOf(false) }
+    var isEditEventDialogShowing by remember { mutableStateOf(false) }
 
     fun editTransaction(transaction: Transaction) {
         transactionToEdit = transaction
@@ -81,11 +90,24 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { showMenu = !showMenu }) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
                                 contentDescription = "Options"
                             )
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = { isEditEventDialogShowing = true },
+                                    text = { Text("Edit") }
+                                )
+                                DropdownMenuItem(
+                                    onClick = { isDeleteEventDialogShowing = true },
+                                    text = { Text("Delete") }
+                                )
+                            }
                         }
                     }
                 )
@@ -192,6 +214,29 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                     isUpdatePersonDialogShowing = false
                 }
             )
+        }
+
+        if (isDeleteEventDialogShowing) {
+            DeleteEventDialog(event = uiState.event!!,
+                deleteEvent = {
+                    eventViewModel.deleteEvent(it)
+                    isDeleteEventDialogShowing = false
+                    onNavigateToHomeScreen()
+                },
+                onDismiss = {
+                    isDeleteEventDialogShowing = false
+                })
+        }
+
+        if (isEditEventDialogShowing) {
+            EditEventDialog(event = uiState.event!!,
+                onEditEvent = {
+                    eventViewModel.updateEvent(it)
+                    isEditEventDialogShowing = false
+                },
+                onDismiss = {
+                    isEditEventDialogShowing = false
+                })
         }
     }
 }

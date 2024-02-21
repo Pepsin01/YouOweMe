@@ -1,4 +1,4 @@
-package com.youoweme.views.eventdetails.persondetails
+package com.youoweme.views.eventdetails
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -23,24 +23,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.youoweme.model.event.Event
 import com.youoweme.model.person.Person
 
 @Composable
-fun AddOrEditPersonDialog(
-    editedPerson: Person?,
-    onEditPerson: (Person) -> Unit,
-    onAddPerson: (Person) -> Unit,
-    onDismiss: () -> Unit
-) {
+fun EditEventDialog(event: Event, onEditEvent: (Event) -> Unit, onDismiss: () -> Unit) {
     var name by remember { mutableStateOf("") }
 
     var isNameValid by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
-    if (editedPerson != null) {
-        name = editedPerson.name
-    }
+    name = event.title
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -68,55 +62,35 @@ fun AddOrEditPersonDialog(
                         .padding(16.dp)
                         .fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text("Enter event name") },
+                    placeholder = { Text("Enter person's name") },
                 )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                TextButton(
+                    onClick = { onDismiss() },
+                    modifier = Modifier.padding(8.dp),
                 ) {
-                    TextButton(
-                        onClick = { onDismiss() },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Cancel")
-                    }
-                    TextButton(
-                        onClick = {
-                            if (isNameValid) {
-                                if (editedPerson != null) {
-                                    onEditPerson(
-                                        Person(
-                                            eventId = editedPerson.eventId,
-                                            name = name,
-                                            id = editedPerson.id,
-                                            balance = editedPerson.balance
-                                        )
-                                    )
-                                }
-                                else {
-                                    onAddPerson(
-                                        Person(
-                                            eventId = 0,
-                                            name = name,
-                                        )
-                                    )
-                                }
-                            }
-                            else {
-                                Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        if (editedPerson != null) {
-                            Text("Edit Person")
+                    Text("Cancel")
+                }
+                TextButton(
+                    onClick = {
+                        if (isNameValid) {
+                            onEditEvent(event.copy(title = name))
+                            onDismiss()
                         }
                         else {
-                            Text("Add Person")
+                            Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show()
                         }
-                    }
+                    },
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    Text("Save")
                 }
             }
         }
