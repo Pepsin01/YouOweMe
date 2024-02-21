@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -56,6 +58,8 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
 
     var personToUpdate by remember { mutableStateOf<Person?>(null) }
 
+    var showMenu by remember { mutableStateOf(false) }
+
     fun editTransaction(transaction: Transaction) {
         transactionToEdit = transaction
         isEditTransactionDialogShowing = true
@@ -81,11 +85,24 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { showMenu = !showMenu }) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,
                                 contentDescription = "Options"
                             )
+                            DropdownMenu(
+                                expanded = showMenu,
+                                onDismissRequest = { showMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = { /* TODO: Handle edit! */ },
+                                    text = { Text("Edit") }
+                                )
+                                DropdownMenuItem(
+                                    onClick = { /* TODO: Handle delete! */ },
+                                    text = { Text("Delete") }
+                                )
+                            }
                         }
                     }
                 )
