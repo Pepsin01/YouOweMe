@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +32,7 @@ import com.youoweme.model.person.Person
 import com.youoweme.model.transaction.Transaction
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.EventViewUiState
+import com.youoweme.viewmodel.UIState
 import com.youoweme.views.eventdetails.persondetails.AddOrEditPersonDialog
 import com.youoweme.views.eventdetails.transactiondetails.AddOrEditTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
@@ -45,9 +45,8 @@ import com.youoweme.views.eventdetails.TransactionsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel, navController: NavHostController = rememberNavController()) {
-    val uiState by eventViewModel.uiState.collectAsState()
-
+fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel, uiState: UIState.Success, navController: NavHostController = rememberNavController()) {
+    var data = uiState.event
     var isTransactionDialogShowing by remember { mutableStateOf(false) }
 
     var isPersonDialogShowing by remember { mutableStateOf(false) }
@@ -82,7 +81,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
             ){
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(text = uiState.event?.title.toString())
+                        data.event?.let { Text(text = it.title) }
                     },
                     navigationIcon = {
                         IconButton(onClick = { onNavigateToHomeScreen() }) {
@@ -100,11 +99,11 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                                 onDismissRequest = { showMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    onClick = { isEditEventDialogShowing = true },
+                                    onClick = { isEditEventDialogShowing = true; showMenu = false },
                                     text = { Text("Edit") }
                                 )
                                 DropdownMenuItem(
-                                    onClick = { isDeleteEventDialogShowing = true },
+                                    onClick = { isDeleteEventDialogShowing = true; showMenu = false },
                                     text = { Text("Delete") }
                                 )
                             }
@@ -139,7 +138,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         EventNavigationGraph(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
-            uiState = uiState,
+            uiState = data,
             eventViewModel = eventViewModel,
             editTransaction = ::editTransaction,
             updatePerson = ::updatePerson
@@ -149,10 +148,10 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         if (isTransactionDialogShowing) {
             AddOrEditTransactionDialog(
                 editedTransaction = null,
-                persons = uiState.persons,
+                persons = data.persons,
                 onAddTransaction = { transaction ->
                     val newTransaction = Transaction(
-                        eventId = uiState.event?.id ?: 0, //TODO: handle this better
+                        eventId = data.event?.id ?: 0, //TODO: handle this better
                         payerId = transaction.payerId,
                         payeeId = transaction.payeeId,
                         amount = transaction.amount,
@@ -172,7 +171,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         if (isEditTransactionDialogShowing) {
             AddOrEditTransactionDialog(
                 editedTransaction = transactionToEdit,
-                persons = uiState.persons,
+                persons = data.persons,
                 onEditTransaction = { transaction ->
                     eventViewModel.updateTransaction(transaction)
                     isEditTransactionDialogShowing = false
@@ -188,7 +187,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
             AddOrEditPersonDialog(
                 onAddPerson = { person ->
                     val newPerson = Person(
-                        eventId = uiState.event?.id ?: 0, //TODO: handle this better
+                        eventId = data.event?.id ?: 0, //TODO: handle this better
                         name = person.name
                     )
                     eventViewModel.addPerson(newPerson)
@@ -217,7 +216,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         }
 
         if (isDeleteEventDialogShowing) {
-            DeleteEventDialog(event = uiState.event!!,
+            DeleteEventDialog(event = data.event!!,
                 deleteEvent = {
                     eventViewModel.deleteEvent(it)
                     isDeleteEventDialogShowing = false
@@ -229,7 +228,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         }
 
         if (isEditEventDialogShowing) {
-            EditEventDialog(event = uiState.event!!,
+            EditEventDialog(event = data.event!!,
                 onEditEvent = {
                     eventViewModel.updateEvent(it)
                     isEditEventDialogShowing = false
