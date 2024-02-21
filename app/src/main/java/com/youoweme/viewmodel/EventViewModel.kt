@@ -193,6 +193,13 @@ class EventViewModel(
         }
     }
 
+    fun deleteEvent(event: Event) {
+        // TODO: Also delete everything related to this event
+        viewModelScope.launch {
+            eventsRepository.deleteEvent(event)
+        }
+    }
+
     //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {

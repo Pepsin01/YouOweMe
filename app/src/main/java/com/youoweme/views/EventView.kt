@@ -37,6 +37,7 @@ import com.youoweme.views.eventdetails.persondetails.AddOrEditPersonDialog
 import com.youoweme.views.eventdetails.transactiondetails.AddOrEditTransactionDialog
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
+import com.youoweme.views.eventdetails.DeleteEventDialog
 import com.youoweme.views.eventdetails.PersonScreen
 import com.youoweme.views.eventdetails.TransactionsScreen
 
@@ -59,6 +60,8 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
     var personToUpdate by remember { mutableStateOf<Person?>(null) }
 
     var showMenu by remember { mutableStateOf(false) }
+
+    var isDeleteEventDialogShowing by remember { mutableStateOf(false) }
 
     fun editTransaction(transaction: Transaction) {
         transactionToEdit = transaction
@@ -99,7 +102,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                                     text = { Text("Edit") }
                                 )
                                 DropdownMenuItem(
-                                    onClick = { /* TODO: Handle delete! */ },
+                                    onClick = { isDeleteEventDialogShowing = true },
                                     text = { Text("Delete") }
                                 )
                             }
@@ -209,6 +212,18 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                     isUpdatePersonDialogShowing = false
                 }
             )
+        }
+
+        if (isDeleteEventDialogShowing) {
+            DeleteEventDialog(event = uiState.event!!,
+                deleteEvent = {
+                    eventViewModel.deleteEvent(it)
+                    isDeleteEventDialogShowing = false
+                    onNavigateToHomeScreen()
+                },
+                onDismiss = {
+                    isDeleteEventDialogShowing = false
+                })
         }
     }
 }

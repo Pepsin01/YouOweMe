@@ -62,4 +62,10 @@ class EventsRepository @Inject constructor(
             eventsDataSource.addEvent(event)
         }
     }
+
+    suspend fun deleteEvent(event: Event) {
+        return withContext(Dispatchers.IO) {
+            eventsDataSource.deleteEvent(event)
+        }
+    }
 }
