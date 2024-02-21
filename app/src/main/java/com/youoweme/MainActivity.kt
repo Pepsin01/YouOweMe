@@ -3,8 +3,10 @@ package com.youoweme
 import com.youoweme.views.EventView
 import com.youoweme.views.HomeScreenView
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -15,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import com.youoweme.ui.theme.YouOweMeTheme
 import androidx.navigation.compose.NavHost
@@ -105,7 +108,13 @@ fun App(eventsRepository: EventsRepository,
                     eventViewModel = eventViewModel,
                     uiState = uiState as UIState.Success
                 )
-                is UIState.Error -> Text("Error: ${(uiState as UIState.Error).exception.message}")
+                is UIState.Error -> {
+                    Toast.makeText(
+                        LocalContext.current,
+                        "Error: ${(uiState as UIState.Error).exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
