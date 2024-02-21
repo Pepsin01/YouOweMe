@@ -38,6 +38,7 @@ import com.youoweme.views.eventdetails.transactiondetails.AddOrEditTransactionDi
 import com.youoweme.views.eventdetails.BottomNavBar
 import com.youoweme.views.eventdetails.DebtsScreen
 import com.youoweme.views.eventdetails.DeleteEventDialog
+import com.youoweme.views.eventdetails.EditEventDialog
 import com.youoweme.views.eventdetails.PersonScreen
 import com.youoweme.views.eventdetails.TransactionsScreen
 
@@ -62,6 +63,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
     var showMenu by remember { mutableStateOf(false) }
 
     var isDeleteEventDialogShowing by remember { mutableStateOf(false) }
+    var isEditEventDialogShowing by remember { mutableStateOf(false) }
 
     fun editTransaction(transaction: Transaction) {
         transactionToEdit = transaction
@@ -98,7 +100,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                                 onDismissRequest = { showMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    onClick = { /* TODO: Handle edit! */ },
+                                    onClick = { isEditEventDialogShowing = true },
                                     text = { Text("Edit") }
                                 )
                                 DropdownMenuItem(
@@ -223,6 +225,17 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
                 },
                 onDismiss = {
                     isDeleteEventDialogShowing = false
+                })
+        }
+
+        if (isEditEventDialogShowing) {
+            EditEventDialog(event = uiState.event!!,
+                onEditEvent = {
+                    // eventViewModel.updateEvent(it)
+                    isEditEventDialogShowing = false
+                },
+                onDismiss = {
+                    isEditEventDialogShowing = false
                 })
         }
     }
