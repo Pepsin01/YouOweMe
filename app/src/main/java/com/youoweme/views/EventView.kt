@@ -231,7 +231,7 @@ fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel
         if (isEditEventDialogShowing) {
             EditEventDialog(event = uiState.event!!,
                 onEditEvent = {
-                    // eventViewModel.updateEvent(it)
+                    eventViewModel.updateEvent(it)
                     isEditEventDialogShowing = false
                 },
                 onDismiss = {

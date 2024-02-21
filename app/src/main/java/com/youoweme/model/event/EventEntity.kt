@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
+import androidx.room.Update
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -38,6 +39,9 @@ interface EventDao {
 
     @Delete
     fun delete(eventEntity: EventEntity)
+
+    @Update
+    fun update(eventEntity: EventEntity)
 }
 
 class EventsRepository @Inject constructor(
@@ -66,6 +70,12 @@ class EventsRepository @Inject constructor(
     suspend fun deleteEvent(event: Event) {
         return withContext(Dispatchers.IO) {
             eventsDataSource.deleteEvent(event)
+        }
+    }
+
+    suspend fun updateEvent(event: Event) {
+        return withContext(Dispatchers.IO) {
+            eventsDataSource.updateEvent(event)
         }
     }
 }

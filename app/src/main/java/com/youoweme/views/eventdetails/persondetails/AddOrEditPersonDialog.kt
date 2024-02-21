@@ -68,7 +68,7 @@ fun AddOrEditPersonDialog(
                         .padding(16.dp)
                         .fillMaxWidth(),
                     singleLine = true,
-                    placeholder = { Text("Enter person's name") },
+                    placeholder = { Text("Enter event name") },
                 )
 
                 Row(
