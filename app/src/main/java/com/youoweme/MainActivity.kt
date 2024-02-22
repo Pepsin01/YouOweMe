@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,55 +65,59 @@ fun App(eventsRepository: EventsRepository,
         personsRepository: PersonsRepository
 ) {
     val navController = rememberNavController()
+    Surface (
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        NavHost(navController = navController, startDestination = "homeScreen") {
+            composable(
+                route = "homeScreen",
+                ) {
 
-    NavHost(navController = navController, startDestination = "homeScreen") {
-        composable(
-            route = "homeScreen",
-            ) {
-
-            HomeScreenView(
-                onNavigateToEvent = { eventId -> navController.navigate("eventView/$eventId") },
-                homeScreenViewModel = HomeScreenViewModel(eventsRepository)
-            )
-        }
-
-        composable("eventView/{eventId}",
-            arguments = listOf(navArgument("eventId") {type = NavType.IntType })) {
-                backStackEntry ->
-            val eventId = backStackEntry.arguments?.getInt("eventId")
-                ?: throw IllegalArgumentException("Navigated with wrong event id")
-
-            val eventViewModel = remember(eventId) {
-                EventViewModel(
-                    eventId,
-                    eventsRepository,
-                    debtsRepository,
-                    transactionsRepository,
-                    personsRepository
+                HomeScreenView(
+                    onNavigateToEvent = { eventId -> navController.navigate("eventView/$eventId") },
+                    homeScreenViewModel = HomeScreenViewModel(eventsRepository)
                 )
             }
-            val uiState by eventViewModel.uiState.collectAsState()
 
-            when (uiState) {
-                is UIState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+            composable("eventView/{eventId}",
+                arguments = listOf(navArgument("eventId") {type = NavType.IntType })) {
+                    backStackEntry ->
+                val eventId = backStackEntry.arguments?.getInt("eventId")
+                    ?: throw IllegalArgumentException("Navigated with wrong event id")
+
+                val eventViewModel = remember(eventId) {
+                    EventViewModel(
+                        eventId,
+                        eventsRepository,
+                        debtsRepository,
+                        transactionsRepository,
+                        personsRepository
+                    )
                 }
-                is UIState.Success -> EventView(
-                    onNavigateToHomeScreen = { navController.navigate("homeScreen") },
-                    eventViewModel = eventViewModel,
-                    uiState = uiState as UIState.Success
-                )
-                is UIState.Error -> {
-                    Toast.makeText(
-                        LocalContext.current,
-                        "Error: ${(uiState as UIState.Error).exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                val uiState by eventViewModel.uiState.collectAsState()
+
+                when (uiState) {
+                    is UIState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    is UIState.Success -> EventView(
+                        onNavigateToHomeScreen = { navController.navigate("homeScreen") },
+                        eventViewModel = eventViewModel,
+                        uiState = uiState as UIState.Success
+                    )
+                    is UIState.Error -> {
+                        Toast.makeText(
+                            LocalContext.current,
+                            "Error: ${(uiState as UIState.Error).exception.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
