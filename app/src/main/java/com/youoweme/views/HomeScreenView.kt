@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,6 +41,7 @@ import com.youoweme.viewmodel.HomeScreenViewModel
 fun HomeScreenView(onNavigateToEvent: (eventId: Long) -> Unit, homeScreenViewModel: HomeScreenViewModel) {
     val uiState by homeScreenViewModel.uiState.collectAsState()
     var clicking by remember { mutableIntStateOf(0) }
+    var isEventAddDialogShowing by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -57,7 +59,7 @@ fun HomeScreenView(onNavigateToEvent: (eventId: Long) -> Unit, homeScreenViewMod
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                homeScreenViewModel.addEvent(Event("event ${clicking++}"))
+                isEventAddDialogShowing = true
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
@@ -92,6 +94,13 @@ fun HomeScreenView(onNavigateToEvent: (eventId: Long) -> Unit, homeScreenViewMod
                     }
                 }
             }
+        }
+
+        if (isEventAddDialogShowing) {
+            AddEventDialog(
+                onDismiss = { isEventAddDialogShowing = false },
+                onAddEvent = { title: String -> homeScreenViewModel.addEvent(Event(title = title)) }
+            )
         }
     }
 }
