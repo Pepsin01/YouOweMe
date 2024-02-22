@@ -24,6 +24,12 @@ data class EventViewUiState(
     val persons: List<Person>
 )
 
+sealed class UIState {
+    data object Loading : UIState()
+    data class Success(val event: EventViewUiState) : UIState()
+    data class Error(val exception: Exception) : UIState()
+}
+
 class EventViewModel(
     private val eventId: Int,
     private var eventsRepository: EventsRepository,
@@ -33,8 +39,8 @@ class EventViewModel(
 ) : ViewModel() {
 
 
-    private val _uiState = MutableStateFlow(EventViewUiState(null, listOf(), listOf(), listOf()))
-    val uiState: StateFlow<EventViewUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
+    val uiState: StateFlow<UIState> = _uiState.asStateFlow()
     private var accountant: Accountant? = null //TODO: do this in a better way
 
     init {
@@ -51,16 +57,17 @@ class EventViewModel(
 
                 accountant = Accountant(eventId.toLong()) //TODO: do this in a better way
 
-                _uiState.update { currState ->
-                    currState.copy(
+                _uiState.value = UIState.Success(
+                    EventViewUiState(
                         event = event,
                         persons = persons,
                         debts = debts,
                         transactions = transactions,
                     )
-                }
+                )
             }
             catch(e: Exception) {
+                _uiState.value = UIState.Error(e)
                 // TODO: ui that the IO request or whatever failed
                 // TODO: do this construct everywhere where repository is used from a ViewModel
             }
@@ -74,9 +81,15 @@ class EventViewModel(
             val debts = debtsRepository.fetchDebts(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    debts = debts,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            debts = debts,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
         }
     }
@@ -102,9 +115,15 @@ class EventViewModel(
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    transactions = transactions,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            transactions = transactions,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
             updateDebts()
         }
@@ -117,9 +136,15 @@ class EventViewModel(
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    transactions = transactions,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            transactions = transactions,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
             updateDebts()
         }
@@ -132,9 +157,15 @@ class EventViewModel(
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    transactions = transactions,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            transactions = transactions,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
 
             updateDebts()
@@ -148,9 +179,15 @@ class EventViewModel(
             val persons = personsRepository.fetchPersons(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    persons = persons,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            persons = persons,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
         }
     }
@@ -158,7 +195,7 @@ class EventViewModel(
     fun deletePerson(person: Person) {
         viewModelScope.launch {
 
-            for (transaction in _uiState.value.transactions) {
+            for (transaction in (_uiState.value as UIState.Success).event.transactions) {
                 if (transaction.payerId == person.id || transaction.payeeId == person.id) {
                     transactionsRepository.deleteTransaction(transaction)
                 }
@@ -170,10 +207,16 @@ class EventViewModel(
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    persons = persons,
-                    transactions = transactions,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            persons = persons,
+                            transactions = transactions,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
             updateDebts()
         }
@@ -186,9 +229,15 @@ class EventViewModel(
             val persons = personsRepository.fetchPersons(eventId.toLong())
 
             _uiState.update { currState ->
-                currState.copy(
-                    persons = persons,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            persons = persons,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
         }
     }
@@ -200,9 +249,15 @@ class EventViewModel(
             val updatedEvent = eventsRepository.fetchEvent(eventId)
 
             _uiState.update { currState ->
-                currState.copy(
-                    event = updatedEvent,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            event = updatedEvent,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
         }
     }
@@ -217,11 +272,12 @@ class EventViewModel(
     //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {
+            val currentDebts = (_uiState.value as UIState.Success).event.debts
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
-            for (debt in _uiState.value.debts) {
+            for (debt in currentDebts) {
                 debtsRepository.deleteDebt(debt)
             }
-            var debts = accountant?.recalculateDebts(_uiState.value.debts, transactions)
+            var debts = accountant?.recalculateDebts(currentDebts, transactions)
             if (debts != null) {
                 for (debt in debts) {
                     debtsRepository.addDebt(debt)
@@ -231,9 +287,15 @@ class EventViewModel(
 
 
             _uiState.update { currState ->
-                currState.copy(
-                    debts = debts,
-                )
+                if (currState is UIState.Success) {
+                    UIState.Success(
+                        currState.event.copy(
+                            debts = debts,
+                        )
+                    )
+                } else {
+                    currState
+                }
             }
         }
     }
