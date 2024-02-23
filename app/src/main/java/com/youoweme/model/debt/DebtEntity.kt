@@ -9,12 +9,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
+//TODO: proc by mel byt model read only? Zmenil bych i u ostatnich ...
 class Debt (
-    val eventId: Long,
+    var eventId: Long, //TODO: Fakt chceme eventID v modelu, osobne bych eventID vyplnit az ve fazi ukladani do databaze na Dao?? blbe se s tim pak pracuje, viz AccountantAlgoritmus
     var amount: Double,
-    val debtorId: Long,
-    val creditorId: Long,
-    val id: Long = 0
+    var debtorId: Long,
+    var creditorId: Long,
+    var id: Long = 0
 )
 
 @Entity

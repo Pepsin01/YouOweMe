@@ -13,10 +13,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class Person(
-    val eventId: Long,
-    val name: String,
-    val balance: Double = 0.0,
-    val id: Long = 0
+    var eventId: Long, //TODO proc ...
+    var name: String,
+    var balance: Double = 0.0,
+    var id: Long = 0
 )
 
 @Entity
