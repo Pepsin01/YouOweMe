@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.youoweme.model.toFixed
 import com.youoweme.model.person.Person
 import com.youoweme.model.transaction.Transaction
 
@@ -63,7 +63,7 @@ fun AddOrEditTransactionDialog(
         mutableStateOf(false)
     }
     var amount by remember {
-        mutableDoubleStateOf(0.0)
+        mutableStateOf(0.toFixed())
     }
     var description by remember {
         mutableStateOf("")
@@ -151,9 +151,9 @@ fun AddOrEditTransactionDialog(
                     }
                 }
                 OutlinedTextField(
-                    value = if (amount == 0.0) "" else amount.toString(),
+                    value = if (amount == 0.toFixed()) "" else amount.toString(),
                     onValueChange = {
-                        amount = it.toDoubleOrNull() ?: 0.0
+                        amount = (it.toIntOrNull())?.toFixed() ?: 0.toFixed()
                     },
                     label = { Text("Amount") },
                     modifier = Modifier

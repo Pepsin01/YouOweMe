@@ -8,6 +8,8 @@ import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Update
+import com.youoweme.model.FixedPointDouble
+import com.youoweme.model.toFixed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,7 +17,7 @@ import javax.inject.Inject
 data class Person(
     var eventId: Long, //TODO proc ...
     var name: String,
-    var balance: Double = 0.0,
+    var balance: FixedPointDouble = 0.toFixed(),
     var id: Long = 0
 )
 
@@ -23,7 +25,7 @@ data class Person(
 data class PersonEntity(
     @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
-    @ColumnInfo val balance: Double,
+    @ColumnInfo val balance: Int,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.youoweme.model.FixedPointDouble
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -12,7 +13,7 @@ import javax.inject.Inject
 //TODO: proc by mel byt model read only? Zmenil bych i u ostatnich ...
 class Debt (
     var eventId: Long, //TODO: Fakt chceme eventID v modelu, osobne bych eventID vyplnit az ve fazi ukladani do databaze na Dao?? blbe se s tim pak pracuje, viz AccountantAlgoritmus
-    var amount: Double,
+    var amount: FixedPointDouble,
     var debtorId: Long,
     var creditorId: Long,
     var id: Long = 0
@@ -20,7 +21,7 @@ class Debt (
 
 @Entity
 data class DebtEntity (
-    @ColumnInfo val amount: Double,
+    @ColumnInfo val amount: Int,
     @ColumnInfo val debtorId: Long,
     @ColumnInfo val creditorId: Long,
     @ColumnInfo val eventId: Long,

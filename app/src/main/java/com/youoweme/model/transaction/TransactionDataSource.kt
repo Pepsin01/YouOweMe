@@ -1,5 +1,6 @@
 package com.youoweme.model.transaction
 
+import com.youoweme.model.toFixed
 import com.youoweme.model.YouOweMeDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,16 +14,16 @@ class TransactionDataSource @Inject constructor(
 
     fun fetchTransactions(eventId: Long): List<Transaction> {
         val transactions  = transactionDao.getAll(eventId)
-        return transactions.map { t -> Transaction(t.eventId, t.amount, t.payerId, t.payeeId, t.description, t.id) }
+        return transactions.map { t -> Transaction(t.eventId, t.amount.toFixed(), t.payerId, t.payeeId, t.description, t.id) }
     }
 
     fun fetchTransaction(transactionId: Long): Transaction? {
         val t = transactionDao.get(transactionId) ?: return null
-        return Transaction(t.eventId, t.amount, t.payerId, t.payeeId, t.description, t.id)
+        return Transaction(t.eventId, t.amount.toFixed(), t.payerId, t.payeeId, t.description, t.id)
     }
 
     fun addTransaction(transaction: Transaction): Long {
-        val t = TransactionEntity(transaction.eventId, transaction.amount, transaction.payerId, transaction.payeeId, transaction.description)
+        val t = TransactionEntity(transaction.eventId, transaction.amount.value, transaction.payerId, transaction.payeeId, transaction.description)
         return transactionDao.insert(t)
     }
 
@@ -32,7 +33,7 @@ class TransactionDataSource @Inject constructor(
     }
 
     fun updateTransaction(transaction: Transaction) {
-        val t = TransactionEntity(transaction.eventId, transaction.amount, transaction.payerId, transaction.payeeId, transaction.description, transaction.id)
+        val t = TransactionEntity(transaction.eventId, transaction.amount.value, transaction.payerId, transaction.payeeId, transaction.description, transaction.id)
         transactionDao.update(t)
     }
 }

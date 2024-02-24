@@ -275,7 +275,7 @@ class EventViewModel(
             val persons = personsRepository.fetchPersons(eventId.toLong());
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
 
-            var debts = accountant?.getDebts(persons, transactions)
+            var debts = accountant?.getDebts(persons)
             if (debts != null) {
                 for (debt in debts) {
                     debtsRepository.addDebt(debt)

@@ -8,13 +8,14 @@ import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Update
+import com.youoweme.model.FixedPointDouble
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class Transaction (
     val eventId: Long,
-    val amount: Double,
+    val amount: FixedPointDouble,
     val payerId: Long,
     val payeeId: Long,
     val description: String,
@@ -24,7 +25,7 @@ class Transaction (
 @Entity
 data class TransactionEntity (
     @ColumnInfo val eventId: Long,
-    @ColumnInfo val amount: Double,
+    @ColumnInfo val amount: Int,
     @ColumnInfo val payerId: Long,
     @ColumnInfo val payeeId: Long,
     @ColumnInfo val description: String,
