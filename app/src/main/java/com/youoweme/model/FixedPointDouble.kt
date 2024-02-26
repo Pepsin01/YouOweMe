@@ -12,6 +12,10 @@ value class FixedPointDouble(val value: Int) : Comparable<FixedPointDouble> {
     operator fun div(other: FixedPointDouble) = FixedPointDouble(value / other.value)
     override fun compareTo(other: FixedPointDouble) = value.compareTo(other.value)
 
+    override fun toString(): String {
+        return value.toString()
+    }
+
     /*
     Underlying floating point number. Arithmetic is done in fixed floating point.
      */
