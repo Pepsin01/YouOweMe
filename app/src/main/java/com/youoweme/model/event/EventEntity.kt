@@ -29,7 +29,7 @@ interface EventDao {
     fun getAll(): List<EventEntity>
 
     @Query("SELECT * FROM EventEntity WHERE id = :id")
-    fun get(id: Long): EventEntity? //TODO: if emtpy, will really return null?
+    fun get(id: Long): EventEntity?
 
 //    @Insert
 //    fun insertAll(vararg eventEntity: EventEntity)

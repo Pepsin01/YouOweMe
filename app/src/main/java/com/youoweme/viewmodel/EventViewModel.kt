@@ -64,8 +64,6 @@ class EventViewModel(
             }
             catch(e: Exception) {
                 _uiState.value = UIState.Error(e)
-                // TODO: ui that the IO request or whatever failed
-                // TODO: do this construct everywhere where repository is used from a ViewModel
             }
         }
     }
@@ -241,10 +239,10 @@ class EventViewModel(
     fun deleteEvent(event: Event) {
         viewModelScope.launch {
             eventsRepository.deleteEvent(event)
-            personsRepository.fetchPersons(eventId.toLong()).forEach {
+            personsRepository.fetchPersons(eventId).forEach {
                 personsRepository.deletePerson(it.id)
             }
-            transactionsRepository.fetchTransactions(eventId.toLong()).forEach {
+            transactionsRepository.fetchTransactions(eventId).forEach {
                 transactionsRepository.deleteTransaction(it)
             }
         }
@@ -252,7 +250,7 @@ class EventViewModel(
 
     private fun updateDebts() {
         viewModelScope.launch {
-            val persons = personsRepository.fetchPersons(eventId);
+            val persons = personsRepository.fetchPersons(eventId)
             val transactions = transactionsRepository.fetchTransactions(eventId)
 
             val debts = accountant.getDebts(persons, transactions)
