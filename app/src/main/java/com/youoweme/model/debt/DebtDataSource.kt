@@ -1,5 +1,6 @@
 package com.youoweme.model.debt
 
+import com.youoweme.model.toFixed
 import com.youoweme.model.YouOweMeDatabase
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,16 +14,16 @@ class DebtDataSource @Inject constructor(
 
     fun fetchDebts(eventId: Long): List<Debt> {
         val debts  = debtDao.getAll(eventId)
-        return debts.map { d -> Debt(d.eventId, d.amount, d.debtorId, d.creditorId, d.id) }
+        return debts.map { d -> Debt(d.eventId, d.amount.toFixed(), d.debtorId, d.creditorId, d.id) }
     }
 
     fun fetchDebt(debtId: Long): Debt? {
         val d = debtDao.get(debtId) ?: return null
-        return Debt(d.eventId, d.amount, d.debtorId, d.creditorId, d.id)
+        return Debt(d.eventId, d.amount.toFixed(), d.debtorId, d.creditorId, d.id)
     }
 
     fun addDebt(debt: Debt): Long {
-        val d = DebtEntity(debt.amount, debt.debtorId, debt.creditorId, debt.eventId)
+        val d = DebtEntity(debt.amount.value, debt.debtorId, debt.creditorId, debt.eventId)
         return debtDao.insert(d)
     }
 

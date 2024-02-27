@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.youoweme.model.toFixed
 import com.youoweme.model.person.Person
 
 @Composable
@@ -69,8 +70,8 @@ fun PersonListItem(person: Person, deletePerson: (Person) -> Unit, updatePerson:
             Spacer(modifier = Modifier.weight(1F))
             Column {
                 Text(
-                    text = if (person.balance < 0) "-" + person.balance.toString() else person.balance.toString() + " €",
-                    color = if (person.balance < 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                    text = if (person.balance < 0.toFixed()) "-" + person.balance.toString() else person.balance.toString() + " €",
+                    color = if (person.balance < 0.toFixed()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                 )
             }
         }

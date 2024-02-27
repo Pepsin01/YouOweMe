@@ -8,22 +8,24 @@ import androidx.room.Query
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Update
+import com.youoweme.model.FixedPointDouble
+import com.youoweme.model.toFixed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class Person(
-    val eventId: Long,
-    val name: String,
-    val balance: Double = 0.0,
-    val id: Long = 0
+    var eventId: Long, //TODO proc ...
+    var name: String,
+    var balance: FixedPointDouble = 0.toFixed(),
+    var id: Long = 0
 )
 
 @Entity
 data class PersonEntity(
     @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
-    @ColumnInfo val balance: Double,
+    @ColumnInfo val balance: Int,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 

@@ -31,7 +31,7 @@ sealed class UIState {
 }
 
 class EventViewModel(
-    private val eventId: Int,
+    private val eventId: Int, //TODO: Proc to neni long a volas vsude toLong pak ??
     private var eventsRepository: EventsRepository,
     private var debtsRepository: DebtsRepository,
     private var transactionsRepository: TransactionsRepository,
@@ -277,12 +277,10 @@ class EventViewModel(
     //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {
-            val currentDebts = (_uiState.value as UIState.Success).event.debts
+            val persons = personsRepository.fetchPersons(eventId.toLong());
             val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
-            for (debt in currentDebts) {
-                debtsRepository.deleteDebt(debt)
-            }
-            var debts = accountant?.recalculateDebts(currentDebts, transactions)
+
+            var debts = accountant?.getDebts(persons)
             if (debts != null) {
                 for (debt in debts) {
                     debtsRepository.addDebt(debt)
