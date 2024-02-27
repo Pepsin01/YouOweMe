@@ -263,9 +263,14 @@ class EventViewModel(
     }
 
     fun deleteEvent(event: Event) {
-        // TODO: Also delete everything related to this event
         viewModelScope.launch {
             eventsRepository.deleteEvent(event)
+            personsRepository.fetchPersons(eventId.toLong()).forEach {
+                personsRepository.deletePerson(it.id)
+            }
+            transactionsRepository.fetchTransactions(eventId.toLong()).forEach {
+                transactionsRepository.deleteTransaction(it)
+            }
         }
     }
 
