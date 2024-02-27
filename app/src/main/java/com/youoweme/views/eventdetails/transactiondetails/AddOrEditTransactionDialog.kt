@@ -153,7 +153,8 @@ fun AddOrEditTransactionDialog(
                 OutlinedTextField(
                     value = if (amount == 0.0) "" else amount.toString(),
                     onValueChange = {
-                        amount = it.toDoubleOrNull() ?: 0.0
+                        amount = if ((it.toDoubleOrNull() ?: 0.0) >= 0.0) it.toDoubleOrNull() ?: 0.0
+                        else 0.0
                     },
                     label = { Text("Amount") },
                     modifier = Modifier

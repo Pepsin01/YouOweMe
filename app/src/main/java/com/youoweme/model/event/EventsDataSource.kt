@@ -16,7 +16,7 @@ class EventsDataSource @Inject constructor(
         return events.map { e -> Event(e.title, e.id) }
     }
 
-    fun fetchEvent(eventId: Int): Event? {
+    fun fetchEvent(eventId: Long): Event? {
         val e = eventDao.get(eventId) ?: return null
         return Event(e.title, e.id)
     }

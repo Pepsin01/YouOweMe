@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.youoweme.model.debt.DebtDao
-import com.youoweme.model.debt.DebtEntity
 import com.youoweme.model.event.EventDao
 import com.youoweme.model.event.EventEntity
 import com.youoweme.model.person.PersonDao
@@ -19,10 +17,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Database(entities = [EventEntity::class, DebtEntity::class, TransactionEntity::class, PersonEntity::class], version = 1)
+@Database(entities = [EventEntity::class, TransactionEntity::class, PersonEntity::class], version = 1)
 abstract class YouOweMeDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
-    abstract fun debtDao(): DebtDao
     abstract fun transactionDao(): TransactionDao
     abstract fun personDao(): PersonDao
 }

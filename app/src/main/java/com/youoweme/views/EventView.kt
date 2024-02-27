@@ -46,7 +46,7 @@ import com.youoweme.views.eventdetails.TransactionsScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventView(onNavigateToHomeScreen: () -> Unit, eventViewModel: EventViewModel, uiState: UIState.Success, navController: NavHostController = rememberNavController()) {
-    var data = uiState.event
+    val data = uiState.event
     var isTransactionDialogShowing by remember { mutableStateOf(false) }
 
     var isPersonDialogShowing by remember { mutableStateOf(false) }

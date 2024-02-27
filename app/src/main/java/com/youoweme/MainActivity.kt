@@ -24,7 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.youoweme.model.debt.DebtsRepository
 import com.youoweme.model.event.EventsRepository
 import com.youoweme.model.person.PersonsRepository
 import com.youoweme.model.transaction.TransactionsRepository
@@ -38,7 +37,6 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var eventsRepository: EventsRepository
-    @Inject lateinit var debtsRepository: DebtsRepository
     @Inject lateinit var transactionsRepository: TransactionsRepository
     @Inject lateinit var personsRepository: PersonsRepository
 
@@ -49,7 +47,6 @@ class MainActivity : ComponentActivity() {
             YouOweMeTheme {
                 App(
                     eventsRepository,
-                    debtsRepository,
                     transactionsRepository,
                     personsRepository
                 )
@@ -60,7 +57,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App(eventsRepository: EventsRepository,
-        debtsRepository: DebtsRepository,
         transactionsRepository: TransactionsRepository,
         personsRepository: PersonsRepository
 ) {
@@ -81,16 +77,15 @@ fun App(eventsRepository: EventsRepository,
             }
 
             composable("eventView/{eventId}",
-                arguments = listOf(navArgument("eventId") {type = NavType.IntType })) {
+                arguments = listOf(navArgument("eventId") {type = NavType.LongType })) {
                     backStackEntry ->
-                val eventId = backStackEntry.arguments?.getInt("eventId")
+                val eventId = backStackEntry.arguments?.getLong("eventId")
                     ?: throw IllegalArgumentException("Navigated with wrong event id")
 
                 val eventViewModel = remember(eventId) {
                     EventViewModel(
                         eventId,
                         eventsRepository,
-                        debtsRepository,
                         transactionsRepository,
                         personsRepository
                     )

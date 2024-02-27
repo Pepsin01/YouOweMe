@@ -13,17 +13,16 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class Person(
-    val eventId: Long,
-    val name: String,
-    val balance: Double = 0.0,
-    val id: Long = 0
+    var eventId: Long,
+    var name: String,
+    var balance: Double = 0.0,
+    var id: Long = 0
 )
 
 @Entity
 data class PersonEntity(
     @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
-    @ColumnInfo val balance: Double,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 
