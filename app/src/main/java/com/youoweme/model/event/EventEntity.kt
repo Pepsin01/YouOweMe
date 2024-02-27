@@ -29,7 +29,7 @@ interface EventDao {
     fun getAll(): List<EventEntity>
 
     @Query("SELECT * FROM EventEntity WHERE id = :id")
-    fun get(id: Int): EventEntity? //TODO: if emtpy, will really return null?
+    fun get(id: Long): EventEntity? //TODO: if emtpy, will really return null?
 
 //    @Insert
 //    fun insertAll(vararg eventEntity: EventEntity)
@@ -48,7 +48,7 @@ class EventsRepository @Inject constructor(
     private val eventsDataSource: EventsDataSource
 )
 {
-    suspend fun fetchEvent(eventId: Int): Event? {
+    suspend fun fetchEvent(eventId: Long): Event? {
         //TODO: inject dispatcher for better testing
         return withContext(Dispatchers.IO) {
             eventsDataSource.fetchEvent(eventId)

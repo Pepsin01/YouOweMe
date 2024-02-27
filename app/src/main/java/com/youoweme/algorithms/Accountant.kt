@@ -4,8 +4,7 @@ import com.youoweme.model.debt.Debt
 import com.youoweme.model.person.Person
 import com.youoweme.model.transaction.Transaction
 
-//TODO: nechci tu posilat eventId, k cemu?
-class Accountant(private val eventId: Long, private val epsilon: Double = 0.01) {
+class Accountant(private val epsilon: Double = 0.01) {
     fun getDebts(persons: List<Person>, transactions: List<Transaction>): List<Debt> {
         val debts = mutableListOf<Debt>()
 
@@ -16,7 +15,7 @@ class Accountant(private val eventId: Long, private val epsilon: Double = 0.01) 
         var j : Int = balances.size - 1
 
         while (i < j) {
-            debts.add(transaction(balances[i], balances[j], eventId))
+            debts.add(transaction(balances[i], balances[j]))
 
             if (balances[i].balance == 0.0) {
                 i += 1
@@ -30,9 +29,9 @@ class Accountant(private val eventId: Long, private val epsilon: Double = 0.01) 
         return debts;
     }
 
-    private fun transaction(person1: Person, person2: Person, eventId: Long /* ugly */): Debt {
+    private fun transaction(person1: Person, person2: Person): Debt {
         if (person1.balance + person2.balance < 0.0) {
-            val debt: Debt = Debt(eventId /* ugly :( */, person1.balance, person2.id, person1.id)
+            val debt = Debt(person1.balance, person2.id, person1.id)
 
             person2.balance += person1.balance
             person1.balance = 0.0
@@ -40,7 +39,7 @@ class Accountant(private val eventId: Long, private val epsilon: Double = 0.01) 
             return debt
         }
 
-        val debt = Debt(eventId /* ugly :( */, -1 * person2.balance, person2.id, person1.id)
+        val debt = Debt(-1 * person2.balance, person2.id, person1.id)
 
         person1.balance += person2.balance
         person2.balance = 0.0
@@ -48,7 +47,7 @@ class Accountant(private val eventId: Long, private val epsilon: Double = 0.01) 
         return debt
     }
 
-    private fun updateBalances(persons: List<Person>, transactions: List<Transaction>): Unit
+    private fun updateBalances(persons: List<Person>, transactions: List<Transaction>)
     {
         val personToBalance : MutableMap<Long, Double> = persons.associateBy({ it.id }, { 0.0 }).toMutableMap()
 

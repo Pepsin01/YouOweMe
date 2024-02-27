@@ -37,7 +37,7 @@ interface TransactionDao {
     fun getAll(eventId: Long): List<TransactionEntity>
 
     @Query("SELECT * FROM TransactionEntity WHERE id = :id")
-    fun get(id: Long): TransactionEntity? //TODO: if emtpy, will really return null?
+    fun get(id: Long): TransactionEntity?
 
     @Insert
     fun insert(transactionEntity: TransactionEntity): Long

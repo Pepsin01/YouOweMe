@@ -6,7 +6,6 @@ import com.youoweme.algorithms.Accountant
 import com.youoweme.model.event.Event
 import com.youoweme.model.event.EventsRepository
 import com.youoweme.model.debt.Debt
-import com.youoweme.model.debt.DebtsRepository
 import com.youoweme.model.person.Person
 import com.youoweme.model.person.PersonsRepository
 import com.youoweme.model.transaction.Transaction
@@ -21,7 +20,7 @@ data class EventViewUiState(
     val event: Event?,
     val debts: List<Debt>,
     val transactions: List<Transaction>,
-    val persons: List<Person>
+    val persons: List<Person>,
 )
 
 sealed class UIState {
@@ -31,17 +30,16 @@ sealed class UIState {
 }
 
 class EventViewModel(
-    private val eventId: Int, //TODO: Proc to neni long a volas vsude toLong pak ??
+    private val eventId: Long,
     private var eventsRepository: EventsRepository,
-    private var debtsRepository: DebtsRepository,
     private var transactionsRepository: TransactionsRepository,
-    private var personsRepository: PersonsRepository
+    private var personsRepository: PersonsRepository,
+    private val accountant: Accountant = Accountant()
 ) : ViewModel() {
 
 
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
-    private var accountant: Accountant? = null //TODO: do this in a better way
 
     init {
         viewModelScope.launch {
@@ -49,13 +47,11 @@ class EventViewModel(
                 val event = eventsRepository.fetchEvent(eventId)
                     ?: throw IllegalArgumentException("There is no event with id of $eventId")
 
-                val persons = personsRepository.fetchPersons(eventId.toLong())
+                val persons = personsRepository.fetchPersons(eventId)
 
-                val debts = debtsRepository.fetchDebts(eventId.toLong())
+                val transactions = transactionsRepository.fetchTransactions(eventId)
 
-                val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
-
-                accountant = Accountant(eventId.toLong()) //TODO: do this in a better way
+                val debts = accountant.getDebts(persons, transactions)
 
                 _uiState.value = UIState.Success(
                     EventViewUiState(
@@ -74,31 +70,11 @@ class EventViewModel(
         }
     }
 
-    fun addDebt(debt: Debt) {
-        viewModelScope.launch {
-            debtsRepository.addDebt(debt)
-
-            val debts = debtsRepository.fetchDebts(eventId.toLong())
-
-            _uiState.update { currState ->
-                if (currState is UIState.Success) {
-                    UIState.Success(
-                        currState.event.copy(
-                            debts = debts,
-                        )
-                    )
-                } else {
-                    currState
-                }
-            }
-        }
-    }
-
     fun settleDebt(debt: Debt) {
         viewModelScope.launch {
             addTransaction(
                 Transaction(
-                    eventId = eventId.toLong(),
+                    eventId = eventId,
                     amount = debt.amount,
                     payerId = debt.debtorId,
                     payeeId = debt.creditorId,
@@ -112,7 +88,7 @@ class EventViewModel(
         viewModelScope.launch {
             transactionsRepository.addTransaction(transaction)
 
-            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            val transactions = transactionsRepository.fetchTransactions(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -133,7 +109,7 @@ class EventViewModel(
         viewModelScope.launch {
             transactionsRepository.deleteTransaction(transaction)
 
-            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            val transactions = transactionsRepository.fetchTransactions(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -154,7 +130,7 @@ class EventViewModel(
         viewModelScope.launch {
             transactionsRepository.updateTransaction(transaction)
 
-            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            val transactions = transactionsRepository.fetchTransactions(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -176,7 +152,7 @@ class EventViewModel(
         viewModelScope.launch {
             personsRepository.addPerson(person)
 
-            val persons = personsRepository.fetchPersons(eventId.toLong())
+            val persons = personsRepository.fetchPersons(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -203,8 +179,8 @@ class EventViewModel(
 
             personsRepository.deletePerson(person.id)
 
-            val persons = personsRepository.fetchPersons(eventId.toLong())
-            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            val persons = personsRepository.fetchPersons(eventId)
+            val transactions = transactionsRepository.fetchTransactions(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -226,7 +202,7 @@ class EventViewModel(
         viewModelScope.launch {
             personsRepository.updatePerson(person)
 
-            val persons = personsRepository.fetchPersons(eventId.toLong())
+            val persons = personsRepository.fetchPersons(eventId)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
@@ -269,20 +245,12 @@ class EventViewModel(
         }
     }
 
-    //TODO: this should be done in a better way
     private fun updateDebts() {
         viewModelScope.launch {
-            val persons = personsRepository.fetchPersons(eventId.toLong());
-            val transactions = transactionsRepository.fetchTransactions(eventId.toLong())
+            val persons = personsRepository.fetchPersons(eventId);
+            val transactions = transactionsRepository.fetchTransactions(eventId)
 
-            var debts = accountant?.getDebts(persons, transactions)
-            if (debts != null) {
-                for (debt in debts) {
-                    debtsRepository.addDebt(debt)
-                }
-            }
-            debts = debtsRepository.fetchDebts(eventId.toLong())
-
+            val debts = accountant.getDebts(persons, transactions)
 
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
