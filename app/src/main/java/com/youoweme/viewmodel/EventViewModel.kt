@@ -51,16 +51,16 @@ class EventViewModel(
 
                 val transactions = transactionsRepository.fetchTransactions(eventId)
 
-                val debts = accountant.getDebts(persons, transactions)
-
                 _uiState.value = UIState.Success(
                     EventViewUiState(
                         event = event,
                         persons = persons,
-                        debts = debts,
+                        debts = listOf(),
                         transactions = transactions,
                     )
                 )
+
+                updateDebts()
             }
             catch(e: Exception) {
                 _uiState.value = UIState.Error(e)
@@ -252,11 +252,14 @@ class EventViewModel(
 
             val debts = accountant.getDebts(persons, transactions)
 
+            accountant.updateBalances(persons, transactions)
+
             _uiState.update { currState ->
                 if (currState is UIState.Success) {
                     UIState.Success(
                         currState.event.copy(
-                            debts = debts,
+                            persons = persons,
+                            debts = debts
                         )
                     )
                 } else {

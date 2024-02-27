@@ -13,16 +13,16 @@ class PersonDataSource @Inject constructor(
 
         fun fetchPersons(eventId : Long): List<Person> {
             val persons  = personDao.getAll(eventId)
-            return persons.map { p -> Person(p.eventId, p.name, p.balance, p.id) }
+            return persons.map { p -> Person(p.eventId, p.name, id = p.id) }
         }
 
         fun fetchPerson(personId: Long): Person? {
             val p = personDao.get(personId) ?: return null
-            return Person(p.eventId, p.name, p.balance, p.id)
+            return Person(p.eventId, p.name, id = p.id)
         }
 
         fun addPerson(person: Person): Long {
-            val p = PersonEntity(person.eventId, person.name, person.balance)
+            val p = PersonEntity(person.eventId, person.name)
             return personDao.insert(p)
         }
 
@@ -32,7 +32,7 @@ class PersonDataSource @Inject constructor(
         }
 
         fun updatePerson(person: Person) {
-            val p = PersonEntity(person.eventId, person.name, person.balance, person.id)
+            val p = PersonEntity(person.eventId, person.name, person.id)
             personDao.update(p)
         }
 }

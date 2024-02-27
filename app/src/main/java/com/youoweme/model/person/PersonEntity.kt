@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class Person(
-    var eventId: Long, //TODO proc ...
+    var eventId: Long,
     var name: String,
     var balance: Double = 0.0,
     var id: Long = 0
@@ -23,7 +23,6 @@ data class Person(
 data class PersonEntity(
     @ColumnInfo val eventId: Long,
     @ColumnInfo val name: String,
-    @ColumnInfo val balance: Double,
     @PrimaryKey(autoGenerate = true) val id: Long = 0
 )
 

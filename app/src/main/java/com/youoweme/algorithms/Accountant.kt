@@ -47,7 +47,7 @@ class Accountant(private val epsilon: Double = 0.01) {
         return debt
     }
 
-    private fun updateBalances(persons: List<Person>, transactions: List<Transaction>)
+    fun updateBalances(persons: List<Person>, transactions: List<Transaction>)
     {
         val personToBalance : MutableMap<Long, Double> = persons.associateBy({ it.id }, { 0.0 }).toMutableMap()
 
