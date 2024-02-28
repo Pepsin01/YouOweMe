@@ -27,20 +27,20 @@ Application works fully offline and does not require any internet connection.
 
 ### Events
 
-![Event Screen](assets/Events.png)
+<img src="assets/Events.png" alt="Event Screen" width="200"/>
 
 ### Event Overview
 Shows the list of people where you can add, edit and delete people.
 And also shows their balance, based on the debts they owe and are owed.
 
-![People Screen](assets/Overview.png)
+<img src="assets/Overview.png" alt="People Screen" width="200"/>
 
 ### Transactions
 Shows the list of transactions that were made in the event.
 
-![Transactions](assets/Transactions.png)
+<img src="assets/Transactions.png" alt="Transactions" width="200"/>
 
 ### Debts
 Shows the list of minimized debts that are owed.
 
-![Debts](assets/Debts.png)
+<img src="assets/Debts.png" alt="Debts" width="200"/>
