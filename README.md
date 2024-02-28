@@ -31,7 +31,7 @@ Application works fully offline and does not require any internet connection.
 
 <img src="assets/Events.png" alt="Event Screen" width="200"/>
 
-### Event Overview
+### Overview
 Shows the list of people where you can add, edit and delete people.
 And also shows their balance, based on the debts they owe and are owed.
 
