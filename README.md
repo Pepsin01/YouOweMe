@@ -25,6 +25,7 @@ Application works fully offline and does not require any internet connection.
 
 ## Screenshots
 
+<div align="center">
 ### Events
 
 <img src="assets/Events.png" alt="Event Screen" width="200"/>
@@ -44,3 +45,4 @@ Shows the list of transactions that were made in the event.
 Shows the list of minimized debts that are owed.
 
 <img src="assets/Debts.png" alt="Debts" width="200"/>
+</div>
