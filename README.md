@@ -26,6 +26,7 @@ Application works fully offline and does not require any internet connection.
 ## Screenshots
 
 <div align="center">
+
 ### Events
 
 <img src="assets/Events.png" alt="Event Screen" width="200"/>
