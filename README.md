@@ -23,3 +23,24 @@ Application works fully offline and does not require any internet connection.
 ### Balance
 - Keep track of the balance of each person in each event.
 
+## Screenshots
+
+### Events
+
+![Event Screen](assets/Events.png)
+
+### Event Overview
+Shows the list of people where you can add, edit and delete people.
+And also shows their balance, based on the debts they owe and are owed.
+
+![People Screen](assets/Overview.png)
+
+### Transactions
+Shows the list of transactions that were made in the event.
+
+![Transactions](assets/Transactions.png)
+
+### Debts
+Shows the list of minimized debts that are owed.
+
+![Debts](assets/Debts.png)
