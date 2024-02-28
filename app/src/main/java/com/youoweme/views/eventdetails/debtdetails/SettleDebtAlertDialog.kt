@@ -27,7 +27,7 @@ fun SettleDebtAlertDialog(
         },
         text = {
             Text(
-                text = "You are about to settle a debt of ${debt.amount} from ${debtor.name} to " +
+                text = "You are about to settle a debt of ${String.format("%.2f", debt.amount)} from ${debtor.name} to " +
                         "${creditor.name}. Are you sure you want to proceed?"
             )
         },

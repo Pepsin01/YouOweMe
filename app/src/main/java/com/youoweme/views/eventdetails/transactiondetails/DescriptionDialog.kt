@@ -27,7 +27,7 @@ fun DescriptionDialog(
             Text(
                 text = "Payer: ${payerName}\n" +
                         "Payee: ${payeeName}\n" +
-                        "Amount: ${transaction.amount}\n" +
+                        "Amount: ${String.format("%.2f", transaction.amount)}\n" +
                         "Description: ${transaction.description.ifEmpty { "No description"}}"
             )
         },
