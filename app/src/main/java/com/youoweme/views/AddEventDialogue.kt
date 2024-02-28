@@ -49,8 +49,8 @@ fun AddEventDialog (
                 OutlinedTextField(
                     value = name,
                     onValueChange = {
-                        name = if (it.length <= 20) it
-                        else it.substring(0, 20)
+                        name = if (it.length <= 32) it
+                        else it.substring(0, 32)
                         isNameValid = it.isNotEmpty()
                     },
                     label = { Text("Event Name") },
