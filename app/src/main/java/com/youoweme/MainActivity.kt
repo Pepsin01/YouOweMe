@@ -57,9 +57,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             YouOweMeTheme {
                 App(
-                    eventsRepository,
-                    transactionsRepository,
-                    personsRepository
+                    eventsRepository
                 )
             }
         }
@@ -83,9 +81,8 @@ fun eventViewModel(eventId: Long): EventViewModel {
 }
 
 @Composable
-fun App(eventsRepository: EventsRepository,
-        transactionsRepository: TransactionsRepository,
-        personsRepository: PersonsRepository
+fun App(
+    eventsRepository: EventsRepository
 ) {
     val navController = rememberNavController()
     Surface (
