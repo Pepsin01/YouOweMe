@@ -1,6 +1,7 @@
 package com.youoweme.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.youoweme.algorithms.Accountant
 import com.youoweme.model.event.Event
@@ -10,6 +11,9 @@ import com.youoweme.model.person.Person
 import com.youoweme.model.person.PersonsRepository
 import com.youoweme.model.transaction.Transaction
 import com.youoweme.model.transaction.TransactionsRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,16 +33,14 @@ sealed class UIState {
     data class Error(val exception: Exception) : UIState()
 }
 
-class EventViewModel(
-    private val eventId: Long,
-    private var eventsRepository: EventsRepository,
-    private var transactionsRepository: TransactionsRepository,
-    private var personsRepository: PersonsRepository,
-    private val accountant: Accountant = Accountant()
+class EventViewModel @AssistedInject constructor(
+    @Assisted private val eventId: Long,
+    private val eventsRepository: EventsRepository,
+    private val transactionsRepository: TransactionsRepository,
+    private val personsRepository: PersonsRepository,
 ) : ViewModel() {
-
-
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
+    private val accountant: Accountant = Accountant()
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
     init {
@@ -61,8 +63,7 @@ class EventViewModel(
                 )
 
                 updateDebts()
-            }
-            catch(e: Exception) {
+            } catch (e: Exception) {
                 _uiState.value = UIState.Error(e)
             }
         }
@@ -270,5 +271,10 @@ class EventViewModel(
                 }
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(eventId: Long): EventViewModel
     }
 }
