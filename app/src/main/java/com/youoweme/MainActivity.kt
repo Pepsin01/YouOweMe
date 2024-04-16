@@ -1,7 +1,5 @@
 package com.youoweme
 
-import com.youoweme.views.EventView
-import com.youoweme.views.HomeScreenView
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,34 +15,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
-import com.youoweme.ui.theme.YouOweMeTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.youoweme.model.event.EventsRepository
-import com.youoweme.model.person.PersonsRepository
-import com.youoweme.model.transaction.TransactionsRepository
+import com.youoweme.ui.theme.YouOweMeTheme
 import com.youoweme.viewmodel.EventViewModel
 import com.youoweme.viewmodel.HomeScreenViewModel
 import com.youoweme.viewmodel.UIState
+import com.youoweme.views.EventView
+import com.youoweme.views.HomeScreenView
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject lateinit var eventsRepository: EventsRepository
-    @Inject lateinit var transactionsRepository: TransactionsRepository
-    @Inject lateinit var personsRepository: PersonsRepository
-
     @EntryPoint
     @InstallIn(ActivityComponent::class)
     interface MainActivityEntryPoint {
@@ -56,9 +49,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             YouOweMeTheme {
-                App(
-                    eventsRepository
-                )
+                App()
             }
         }
     }
@@ -81,9 +72,7 @@ fun eventViewModel(eventId: Long): EventViewModel {
 }
 
 @Composable
-fun App(
-    eventsRepository: EventsRepository
-) {
+fun App() {
     val navController = rememberNavController()
     Surface (
         modifier = Modifier.fillMaxSize(),
@@ -94,9 +83,10 @@ fun App(
                 route = "homeScreen",
                 ) {
 
+                val hiltView = hiltViewModel<HomeScreenViewModel>()
                 HomeScreenView(
                     onNavigateToEvent = { eventId -> navController.navigate("eventView/$eventId") },
-                    homeScreenViewModel = HomeScreenViewModel(eventsRepository)
+                    homeScreenViewModel = hiltView
                 )
             }
 
