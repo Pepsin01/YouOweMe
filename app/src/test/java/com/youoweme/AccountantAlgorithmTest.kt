@@ -12,7 +12,7 @@ class AccountantAlgorithmTest {
     @Test
     fun getDebtsTest_Ints() {
         // arrange
-        val accountant: Accountant = Accountant(0)
+        val accountant: Accountant = Accountant(0.0)
         val persons = listOf<Person>(
             Person(0, "A", 0.0, 1),
             Person(0, "B", 0.0, 2),
@@ -38,17 +38,17 @@ class AccountantAlgorithmTest {
 
         // assert
         assertEquals(5, debts.size)
-        assertEquals(Debt(0, 5.0, 1, 5), debts[0])
-        assertEquals(Debt(0, 1.0, 1, 3), debts[1])
-        assertEquals(Debt(0, 1.0, 7, 3), debts[2])
-        assertEquals(Debt(0, 1.0, 7, 2), debts[3])
-        assertEquals(Debt(0, 1.0, 6, 4), debts[4])
+        assertEquals(Debt(5.0, 1, 5), debts[0])
+        assertEquals(Debt(1.0, 1, 3), debts[1])
+        assertEquals(Debt(1.0, 7, 3), debts[2])
+        assertEquals(Debt(1.0, 7, 2), debts[3])
+        assertEquals(Debt(1.0, 6, 4), debts[4])
     }
 
     @Test
     fun getDebtsTest_Doubles() {
         // arrange
-        val accountant: Accountant = Accountant(0)
+        val accountant: Accountant = Accountant(0.0)
         val persons = listOf<Person>(
             Person(0, "A", 0.0, 1),
             Person(0, "B", 0.0, 2),
@@ -74,12 +74,12 @@ class AccountantAlgorithmTest {
 
         // assert
         assertEquals(6, debts.size)
-        assertEquals(Debt(0, 4.89, 1, 5), debts[0])
-        assertEquals(Debt(0, 1.06, 1, 3), debts[1])
-        assertEquals(Debt(0, 1.049, 6, 3), debts[2])
-        assertEquals(Debt(0, 0.74, 6, 2), debts[3])
-        assertEquals(Debt(0, 0.759, 7, 2), debts[4])
-        assertEquals(Debt(0, 0.85, 7, 4), debts[5])
+        assertEquals(Debt(4.89, 1, 5), debts[0])
+        assertEquals(Debt(1.06, 1, 3), debts[1])
+        assertEquals(Debt( 1.049, 6, 3), debts[2])
+        assertEquals(Debt( 0.74, 6, 2), debts[3])
+        assertEquals(Debt( 0.759, 7, 2), debts[4])
+        assertEquals(Debt(0.85, 7, 4), debts[5])
     }
 
     private fun assertEquals(expected: Debt, actual: Debt) {
